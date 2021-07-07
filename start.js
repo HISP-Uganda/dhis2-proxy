@@ -10,7 +10,6 @@ runner
     "--config",
     path.join(__dirname, "moleculer.config.js"),
     "--env",
-    "--instances 3",
     path.join(__dirname, "services"),
   ])
   .catch((err) => {
