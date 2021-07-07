@@ -6,8 +6,6 @@
 
 const axios = require("axios");
 
-console.log(process.env.username)
-
 const instance = axios.create({
   baseURL: "https://epivac.health.go.ug/api/",
   auth: { username: process.env.username, password: process.env.password },
