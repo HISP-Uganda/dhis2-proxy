@@ -2,7 +2,7 @@
   "name": "dhis2",
   "version": "1.0.0",
   "description": "My Moleculer-based microservices project",
-  "bin": "start.js",
+  "bin": "main.js",
   "scripts": {
     "dev": "moleculer-runner --repl --hot services/**/*.service.js",
     "start": "moleculer-runner --instances=5 services",
