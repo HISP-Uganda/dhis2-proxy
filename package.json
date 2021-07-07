@@ -1,0 +1,59 @@
+{
+  "name": "dhis2",
+  "version": "1.0.0",
+  "description": "My Moleculer-based microservices project",
+  "bin": "start.js",
+  "scripts": {
+    "dev": "moleculer-runner --repl --hot services/**/*.service.js",
+    "start": "moleculer-runner --instances=5 services",
+    "cli": "moleculer connect NATS",
+    "ci": "jest --watch",
+    "test": "jest --coverage",
+    "lint": "eslint services",
+    "dc:up": "docker-compose up --build -d",
+    "dc:logs": "docker-compose logs -f",
+    "dc:down": "docker-compose down",
+    "bundle": "pkg . -t host --out-path dist/"
+  },
+  "keywords": [
+    "microservices",
+    "moleculer"
+  ],
+  "author": "",
+  "devDependencies": {
+    "eslint": "^7.23.0",
+    "jest": "^26.6.3",
+    "jest-cli": "^26.6.3",
+    "moleculer-repl": "^0.6.4",
+    "pkg": "^5.3.0"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "moleculer": "^0.14.13",
+    "moleculer-db": "^0.8.4",
+    "moleculer-db-adapter-mongo": "^0.4.7",
+    "moleculer-mail": "^1.2.5",
+    "moleculer-web": "^0.9.1",
+    "nats": "^1.4.12"
+  },
+  "engines": {
+    "node": ">= 10.x.x"
+  },
+  "pkg": {
+    "assets": [
+      "public/**/*.*"
+    ],
+    "scripts": [
+      "moleculer.config.js",
+      "services/**/*.*"
+    ]
+  },
+  "jest": {
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node",
+    "rootDir": "./services",
+    "roots": [
+      "../test"
+    ]
+  }
+}
