@@ -8,7 +8,7 @@ const axios = require("axios");
 
 const instance = axios.create({
   baseURL: "https://epivac.health.go.ug/api/",
-  auth: { username: "admin", password: "District#9" },
+  auth: { username: process.env.username, password: process.env.password },
 });
 
 module.exports = {
