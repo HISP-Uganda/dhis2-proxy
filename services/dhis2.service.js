@@ -65,7 +65,7 @@ module.exports = {
     },
     put: {
       rest: {
-        method: "put",
+        method: "PUT",
         path: "/",
       },
       async handler(ctx) {
