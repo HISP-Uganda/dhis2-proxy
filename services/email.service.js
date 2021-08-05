@@ -5,26 +5,19 @@
  */
 
 const axios = require("axios");
-const MailerService = require("moleculer-mail");
+// const MailerService = require("moleculer-mail");
 
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 module.exports = {
   name: "email",
 
-  mixins: [MailerService],
+  mixins: [],
 
   /**
    * Settings
    */
-  settings: {
-    from: "colupot@hispuganda.org",
-    transport: {
-      service: "mailjet",
-      auth: {
-        user: "02255d90a62b476dcb1129082cbc91be",
-        pass: "8c795fd335f2d3a4f230b6e3864ebc79",
-      },
-    },
-  },
+  settings: {},
 
   /**
    * Dependencies
@@ -46,12 +39,14 @@ module.exports = {
         path: "/",
       },
       handler(ctx) {
-        return {};
-        // return ctx.call("mail.send", {
-        //   to: "olupotcharles@gmail.com",
-        //   subject: "Hello Friends!",
-        //   html: "This is the <b>content</b>!",
-        // });
+        const msg = {
+          to: "olupotcharles@gmail.com",
+          from: "colupot@hispuganda.org",
+          subject: "Sending with SendGrid is Fun",
+          text: "and easy to do anywhere, even with Node.js",
+          html: "<strong>and easy to do anywhere, even with Node.js</strong>",
+        };
+        return sgMail.send(msg);
       },
     },
   },
