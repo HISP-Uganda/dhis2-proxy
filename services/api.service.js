@@ -20,7 +20,7 @@ module.exports = {
       origin: [
         "http://localhost:3000",
         "https://epivac.health.go.ug",
-        "https://epivac-selfreg.hispuganda.org/",
+        "https://epivac-selfreg.hispuganda.org",
       ],
       // Configures the Access-Control-Allow-Methods CORS header.
       methods: ["GET", "OPTIONS", "POST", "PUT", "DELETE"],
