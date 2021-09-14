@@ -1,11 +1,10 @@
 const fs = require("fs");
-const metadata = require("./metadata.json");
+const metadata = require("./IPC_Assesment_RhitesNAcholi_results.json");
 
-const { dataSets, ...other } = metadata;
 
 fs.writeFile(
   "metdata1.json",
-  JSON.stringify(other, null, 2),
+  JSON.stringify(metadata, null, 2),
   function (err, data) {
     if (err) {
       return console.log(err);

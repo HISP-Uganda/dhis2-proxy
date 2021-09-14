@@ -5,8 +5,11 @@
  */
 
 const axios = require("axios");
-let organisationUnits = {};
 const mapping = require("./mapping.json");
+const ouMapping = require("./oumapping.json");
+const { fromPairs } = require("lodash");
+
+let organisationUnits = {};
 
 const instance = axios.create({
   baseURL: "https://ipc.hispuganda.org/ipc/api/",
@@ -45,7 +48,16 @@ module.exports = {
       async handler(ctx) {
         const { data, ip } = ctx.params;
         const events = [];
-        for (const record of data) {
+        const processed = data.flatMap((d) => {
+          if (d.pre) {
+            const { pre, ...others } = d;
+            return pre.map((preData) => {
+              return { ...others, ...preData };
+            });
+          }
+          return [d];
+        });
+        for (const record of processed) {
           const dataValues = Object.entries(record).flatMap(([de, value]) => {
             if (mapping[de] && value) {
               return [{ dataElement: mapping[de], value }];
@@ -53,9 +65,10 @@ module.exports = {
             return [];
           });
           dataValues.push({ dataElement: "V9RentkWZEz", value: ip });
-          const orgUnit = String(
-            `${record.district}/${record.subcounty}/${record.facility}`
-          ).replaceAll("_", " ");
+          const orgUnit = String(`${record.subcounty}${record.facility}`)
+            .toLowerCase()
+            .replaceAll("_", "")
+            .replaceAll(" ", "");
           const event = {
             program: "ifCYpT4mFPu",
             orgUnit: organisationUnits[orgUnit],
@@ -68,12 +81,13 @@ module.exports = {
             events.push(event);
           }
         }
-        try {
-          const { data } = await instance.post("events", { events });
-          return data;
-        } catch (error) {
-          return error.response.data.response.importSummaries;
-        }
+        return events;
+        // try {
+        //   const { data } = await instance.post("events", { events });
+        //   return data;
+        // } catch (error) {
+        //   return error.response.data.response.importSummaries;
+        // }
       },
     },
   },
@@ -97,17 +111,9 @@ module.exports = {
    * Service started lifecycle event handler
    */
   async started() {
-    const {
-      data: { organisationUnits: units },
-    } = await instance.get("programs/ifCYpT4mFPu", {
-      params: {
-        fields: "organisationUnits[id,name,parent[id,name,parent[id,name]]]",
-      },
-    });
-    for (const ou of units) {
-      const key = `${ou.parent.parent.name}/${ou.parent.name}/${ou.name}`;
-      organisationUnits[key] = ou.id;
-    }
+    organisationUnits = fromPairs(
+      ouMapping.map((ou) => [ou.name, ou.DHIS2HFUIDs])
+    );
   },
 
   /**
