@@ -81,13 +81,12 @@ module.exports = {
             events.push(event);
           }
         }
-        return events;
-        // try {
-        //   const { data } = await instance.post("events", { events });
-        //   return data;
-        // } catch (error) {
-        //   return error.response.data.response.importSummaries;
-        // }
+        try {
+          const { data } = await instance.post("events", { events });
+          return data;
+        } catch (error) {
+          return error.response.data.response.importSummaries;
+        }
       },
     },
   },
