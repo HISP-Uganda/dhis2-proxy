@@ -39,6 +39,7 @@ module.exports = {
         path: "/",
       },
       handler(ctx) {
+        console('Testing')
         const msg = {
           to: "olupotcharles@gmail.com",
           from: "colupot@hispuganda.org",

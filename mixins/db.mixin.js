@@ -43,21 +43,20 @@ module.exports = function(collection) {
 		async started() {
 			// Check the count of items in the DB. If it's empty,
 			// call the `seedDB` method of the service.
-			if (this.seedDB) {
-				const count = await this.adapter.count();
-				if (count == 0) {
-					this.logger.info(`The '${collection}' collection is empty. Seeding the collection...`);
-					await this.seedDB();
-					this.logger.info("Seeding is done. Number of records:", await this.adapter.count());
-				}
-			}
+			// if (this.seedDB) {
+			// 	const count = await this.adapter.count();
+			// 	if (count == 0) {
+			// 		this.logger.info(`The '${collection}' collection is empty. Seeding the collection...`);
+			// 		await this.seedDB();
+			// 		this.logger.info("Seeding is done. Number of records:", await this.adapter.count());
+			// 	}
+			// }
 		}
 	};
 
 	if (process.env.MONGO_URI) {
 		// Mongo adapter
 		const MongoAdapter = require("moleculer-db-adapter-mongo");
-
 		schema.adapter = new MongoAdapter(process.env.MONGO_URI);
 		schema.collection = collection;
 	} else if (process.env.NODE_ENV === 'test') {
@@ -65,7 +64,6 @@ module.exports = function(collection) {
 		schema.adapter = new DbService.MemoryAdapter();
 	} else {
 		// NeDB file DB adapter
-
 		// Create data folder
 		if (!fs.existsSync("./data")) {
 			fs.mkdirSync("./data");
