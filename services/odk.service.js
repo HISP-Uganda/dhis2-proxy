@@ -59,13 +59,16 @@ module.exports = {
         });
         for (const record of processed) {
           const dataValues = Object.entries(record).flatMap(([de, value]) => {
-            if (mapping[de] && value) {
+            if (mapping[de] && String(value)) {
               return [{ dataElement: mapping[de], value }];
             }
             return [];
           });
           dataValues.push({ dataElement: "V9RentkWZEz", value: ip });
-          const orgUnit = String(`${record.subcounty}${record.facility}`)
+          console.log(dataValues);
+          const orgUnit = String(
+            `${record.district}${record.subcounty}${record.facility}`
+          )
             .toLowerCase()
             .replaceAll("_", "")
             .replaceAll(" ", "");
@@ -75,7 +78,8 @@ module.exports = {
             eventDate: record.date,
             dataValues,
             status: "COMPLETED",
-            completedDate: record["*meta-date-marked-as-complete*"],
+            completedDate:
+              record["*meta-date-marked-as-complete*"] || "2021-05-02",
           };
           if (organisationUnits[orgUnit]) {
             events.push(event);
@@ -83,7 +87,7 @@ module.exports = {
         }
         try {
           const { data } = await instance.post("events", { events });
-          return data;
+          return data.response.importSummaries;
         } catch (error) {
           return error.response.data.response.importSummaries;
         }
