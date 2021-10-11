@@ -2,6 +2,7 @@
 const { Client } = require("@elastic/elasticsearch");
 
 const client = new Client({ node: "http://localhost:9200" });
+// { match_phrase: { ciCR6BBvIT4: phone } },
 
 require("array.prototype.flatmap").shim();
 
@@ -83,10 +84,7 @@ module.exports = {
           body: {
             query: {
               bool: {
-                must: [
-                  { match: { id: identifier } },
-                  { match_phrase: { ciCR6BBvIT4: phone } },
-                ],
+                must: [{ match: { id: identifier } }],
               },
             },
           },

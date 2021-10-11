@@ -32,12 +32,7 @@ module.exports = {
   actions: {
     processInstance: {
       async handler(ctx) {
-        const {
-          attributes,
-          enrollments,
-          trackedEntityInstance,
-          removeKeywords,
-        } = ctx.params;
+        const { attributes, enrollments, trackedEntityInstance } = ctx.params;
         const enroll = enrollments.filter((en) => en.program === PROGRAM);
         const allEvents = flatten(enroll.map((en) => en.events));
         let results = fromPairs(attributes.map((a) => [a.attribute, a.value]));
@@ -70,16 +65,18 @@ module.exports = {
           })
         );
 
-        const foundFacilities = fromPairs(
-          facilities.map(
-            ([
-              {
-                _source: { id, ...rest },
-              },
-            ]) => {
-              return [id, { id, ...rest }];
-            }
-          )
+        let foundFacilities = fromPairs(
+          facilities
+            .map(([data]) => {
+              if (data && data._source) {
+                const {
+                  _source: { id, ...rest },
+                } = data;
+                return [id, { id, ...rest }];
+              }
+              return null;
+            })
+            .filter((d) => d !== null)
         );
         processedEvents = processedEvents.map((event) => {
           const facility = foundFacilities[event.orgUnit] || {};

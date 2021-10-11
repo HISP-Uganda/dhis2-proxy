@@ -5,8 +5,6 @@
  */
 
 const axios = require("axios");
-const { fromPairs, flatten, uniq } = require("lodash");
-const { differenceInDays, parseISO } = require("date-fns");
 
 const epivac = axios.create({
   baseURL: "https://epivac.health.go.ug/api/",
@@ -53,7 +51,7 @@ module.exports = {
           totalPages: true,
           page: 1,
           fields: "*",
-          pageSize: 250,
+          pageSize: 1000,
           ...ctx.params,
         };
         const {
@@ -91,7 +89,7 @@ module.exports = {
           ouMode: "ALL",
           totalPages: true,
           page: 1,
-          pageSize: 250,
+          pageSize: 1000,
           fields: "*",
           ...ctx.params,
         };
@@ -126,40 +124,18 @@ module.exports = {
     facilities: {
       async handler(ctx) {
         const params = {
-          level: 5,
-          page: 1,
           fields:
-            "id,name,parent[id,name,parent[id,name,parent[id,name,parent[id,name]]]]",
-          pageSize: 250,
+            "organisationUnits[id,name,parent[id,name,parent[id,name,parent[id,name,parent[id,name]]]]]",
         };
         const {
-          data: {
-            organisationUnits,
-            pager: { pageCount },
-          },
-        } = await epivac.get(`organisationUnits`, { params });
-
+          data: { organisationUnits },
+        } = await epivac.get(`programs/yDuAzyqYABS`, { params });
+        const processed = this.processFacilities(organisationUnits);
         await ctx.call("es.bulk", {
           index: "facilities",
-          dataset: this.processFacilities(organisationUnits),
+          dataset: processed,
           id: "id",
         });
-        if (pageCount > 1) {
-          for (let page = 2; page <= pageCount; page++) {
-            console.log(`Processing ${page} of ${pageCount}`);
-            const {
-              data: { organisationUnits },
-            } = await epivac.get(`organisationUnits`, {
-              params: { ...params, page },
-            });
-
-            await ctx.call("es.bulk", {
-              index: "facilities",
-              dataset: this.processFacilities(organisationUnits),
-              id: "id",
-            });
-          }
-        }
       },
     },
     index: {
@@ -180,36 +156,47 @@ module.exports = {
   methods: {
     processFacilities(organisationUnits) {
       return organisationUnits.map((unit) => {
-        const {
+        const { id, name } = unit;
+        let facility = {
           id,
           name,
-          parent: {
-            id: subCountyId,
-            name: subCountyName,
-            parent: {
-              id: districtId,
-              name: districtName,
-              parent: {
-                id: regionId,
-                name: regionName,
-                parent: { id: countryId, name: countryName },
-              },
-            },
-          },
-        } = unit;
-
-        return {
-          id,
-          name,
-          subCountyId,
-          subCountyName,
-          districtId,
-          districtName,
-          regionId,
-          regionName,
-          countryId,
-          countryName,
         };
+
+        if (unit.parent) {
+          const subCounty = unit.parent;
+          facility = {
+            ...facility,
+            subCountyId: subCounty.id,
+            subCountyName: subCounty.name,
+          };
+          if (subCounty.parent) {
+            const district = subCounty.parent;
+            facility = {
+              ...facility,
+              districtId: district.id,
+              districtName: district.name,
+            };
+
+            if (district.parent) {
+              const region = district.parent;
+              facility = {
+                ...facility,
+                regionId: region.id,
+                regionName: region.name,
+              };
+
+              if (region.parent) {
+                const country = region.parent;
+                facility = {
+                  ...facility,
+                  countryId: country.id,
+                  countryName: country.name,
+                };
+              }
+            }
+          }
+        }
+        return facility;
       });
     },
   },
