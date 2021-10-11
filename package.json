@@ -31,6 +31,7 @@
     "@elastic/elasticsearch": "^7.15.0",
     "@sendgrid/mail": "^7.4.5",
     "array-merge-by-key": "^1.0.1",
+    "array.prototype.flatmap": "^1.2.5",
     "axios": "^0.21.1",
     "dotenv": "^10.0.0",
     "moleculer": "^0.14.13",
