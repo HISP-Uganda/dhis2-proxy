@@ -17,7 +17,7 @@ const epivac = axios.create({
 });
 
 const defence = axios.create({
-  baseURL: "http://covax.upf.go.ug:8080/api/",
+  baseURL: "http://10.20.17.71:8080/api/",
   auth: {
     username: process.env.DEFENCE_USERNAME,
     password: process.env.DEFENCE_PASSWORD,
@@ -104,23 +104,23 @@ module.exports = {
           params,
         });
 
-        await ctx.call("utils.processInstances", {
+        const response = await ctx.call("utils.processInstances", {
           trackedEntityInstances,
         });
-        if (pageCount > 1) {
-          for (let page = 2; page <= pageCount; page++) {
-            console.log(`Processing ${page} of ${pageCount}`);
-            const {
-              data: { trackedEntityInstances },
-            } = await defence.get("trackedEntityInstances.json", {
-              params: { ...params, page },
-            });
-            await ctx.call("utils.processInstances", {
-              trackedEntityInstances,
-            });
-          }
-        }
-        return "finished";
+        // if (pageCount > 1) {
+        //   for (let page = 2; page <= pageCount; page++) {
+        //     console.log(`Processing ${page} of ${pageCount}`);
+        //     const {
+        //       data: { trackedEntityInstances },
+        //     } = await defence.get("trackedEntityInstances.json", {
+        //       params: { ...params, page },
+        //     });
+        //     await ctx.call("utils.processInstances", {
+        //       trackedEntityInstances,
+        //     });
+        //   }
+        // }
+        return response;
       },
     },
     facilities: {

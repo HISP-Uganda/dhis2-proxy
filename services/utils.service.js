@@ -21,7 +21,7 @@ module.exports = {
   /**
    * Dependencies
    */
-  dependencies: ["es"],
+  dependencies: ["instance"],
 
   /**
    * Actions
@@ -32,7 +32,10 @@ module.exports = {
         const { trackedEntityInstances } = ctx.params;
         let instances = [];
         for (const instance of trackedEntityInstances) {
-          let currentData = this.processInstance(instance);
+          let currentData = await ctx.call(
+            "instance.processInstance",
+            instance
+          );
           if (currentData.id) {
             const previous = await ctx.call("es.search", {
               index: "certificates",
@@ -44,7 +47,13 @@ module.exports = {
             });
             if (previous.length > 0) {
               const previousData = previous[0]._source;
-              currentData = { ...previousData, ...currentData };
+              currentData = {
+                ...previousData,
+                ...currentData,
+                certificate: previousData.certificate
+                  ? previousData.certificate
+                  : currentData.certificate,
+              };
             }
             instances.push(currentData);
           }
@@ -86,6 +95,7 @@ module.exports = {
             ...fromPairs(dataValues.map((dv) => [dv.dataElement, dv.value])),
           };
         });
+      const allFacilities = uniq(processedEvents.map((e) => e.orgUnit));
       const groupedData = groupBy(processedEvents, "LUIsbsm3okG");
       const pp = Object.entries(groupedData).map(([dose, allDoses]) => {
         const gotDoses = mergeByKey("LUIsbsm3okG", allDoses);
@@ -93,9 +103,13 @@ module.exports = {
       });
       return {
         ...results,
+        certificate: Math.floor(
+          Math.random() * (99999999 - 10000000 + 1) + 10000000
+        ),
         trackedEntityInstance,
         id,
         ...fromPairs(pp),
+        facilities: allFacilities,
       };
     },
   },
