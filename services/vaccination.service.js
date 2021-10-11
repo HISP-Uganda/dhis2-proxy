@@ -17,7 +17,7 @@ const epivac = axios.create({
 });
 
 const defence = axios.create({
-  baseURL: "http://10.20.17.71:8080/api/",
+  baseURL: "http://covax.upf.go.ug:8080/api/",
   auth: {
     username: process.env.DEFENCE_USERNAME,
     password: process.env.DEFENCE_PASSWORD,
