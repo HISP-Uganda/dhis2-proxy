@@ -107,19 +107,19 @@ module.exports = {
         const response = await ctx.call("utils.processInstances", {
           trackedEntityInstances,
         });
-        // if (pageCount > 1) {
-        //   for (let page = 2; page <= pageCount; page++) {
-        //     console.log(`Processing ${page} of ${pageCount}`);
-        //     const {
-        //       data: { trackedEntityInstances },
-        //     } = await defence.get("trackedEntityInstances.json", {
-        //       params: { ...params, page },
-        //     });
-        //     await ctx.call("utils.processInstances", {
-        //       trackedEntityInstances,
-        //     });
-        //   }
-        // }
+        if (pageCount > 1) {
+          for (let page = 2; page <= pageCount; page++) {
+            console.log(`Processing ${page} of ${pageCount}`);
+            const {
+              data: { trackedEntityInstances },
+            } = await defence.get("trackedEntityInstances.json", {
+              params: { ...params, page },
+            });
+            await ctx.call("utils.processInstances", {
+              trackedEntityInstances,
+            });
+          }
+        }
         return response;
       },
     },
