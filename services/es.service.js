@@ -119,6 +119,26 @@ module.exports = {
         }
       },
     },
+    searchTrackedEntityInstance: {
+      async handler(ctx) {
+        const { trackedEntityInstance, index } = ctx.params;
+        const {
+          body: {
+            hits: { hits },
+          },
+        } = await client.search({
+          index,
+          body: {
+            query: {
+              match: { trackedEntityInstance },
+            },
+          },
+        });
+        if (hits.length > 0) {
+          return hits[0]._source;
+        }
+      },
+    },
     search: {
       params: {
         index: "string",

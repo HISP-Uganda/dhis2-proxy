@@ -46,12 +46,12 @@ module.exports = {
               data[PHONE_ATTRIBUTE]
             }\n${data.DOSE1.bbnyNYD1wgS}:${new Intl.DateTimeFormat("fr").format(
               Date.parse(data.DOSE1.eventDate)
-            )},${data.DOSE1.orgUnitName},${data.DOSE1.district || ""}\n${
+            )},${data.DOSE1.orgUnitName},${data.DOSE1.districtName || ""}\n${
               data.DOSE2.bbnyNYD1wgS
             }:${new Intl.DateTimeFormat("fr").format(
               Date.parse(data.DOSE2.eventDate)
             )},${data.DOSE2.orgUnitName},${
-              data.DOSE2.district || ""
+              data.DOSE2.districtName || ""
             }\n\nClick to verify\nhttps://epivac.health.go.ug/certificates/#/validate/${
               data.trackedEntityInstance
             }`,
@@ -81,20 +81,37 @@ module.exports = {
               data[PHONE_ATTRIBUTE]
             }\n${data.DOSE1.bbnyNYD1wgS}:${new Intl.DateTimeFormat("fr").format(
               Date.parse(data.DOSE1.eventDate)
-            )},${data.DOSE1.orgUnitName},${data.DOSE1.district || ""}\n${
+            )},${data.DOSE1.orgUnitName},${data.DOSE1.districtName || ""}\n${
               data.DOSE2.bbnyNYD1wgS
             }:${new Intl.DateTimeFormat("fr").format(
               Date.parse(data.DOSE2.eventDate)
             )},${data.DOSE2.orgUnitName},${
-              data.DOSE2.district || ""
-            }\n\nClick to verify\nhttps://epivac.health.go.ug/certificates/#/validate/${
+              data.DOSE2.districtName || ""
+            }\n\nClick to verify\nhttps://services.dhis2.hispuganda.org/certificates/validate/${
               data.trackedEntityInstance
             }`,
             { margin: 0 }
           );
           return { ...data, qr };
+        } else if (!isEmpty(data) && data.DOSE2 && !data.DOSE2.vk2nF6wZwY4) {
+          return {
+            ...data,
+            eligible: false,
+            message: `Your may have not been fully vaccinated, current records show you have only received second dose without first dose.`,
+          };
         }
-        return { ...data, eligible: false };
+        if (isEmpty(data)) {
+          return {
+            eligible: false,
+            message: "You have no registered vaccination information",
+          };
+        }
+        return {
+          ...data,
+          eligible: false,
+          message:
+            "Your may have not been fully vaccinated, current records show you have only received one dose.",
+        };
       },
     },
     createIndex: {
@@ -122,6 +139,15 @@ module.exports = {
       },
       async handler(ctx) {
         return await ctx.call("vaccination.defenceData", ctx.params);
+      },
+    },
+    validate: {
+      rest: {
+        method: "GET",
+        path: "/validate/:trackedEntityInstance",
+      },
+      async handler(ctx) {
+        return await ctx.call("es.searchTrackedEntityInstance", ctx.params);
       },
     },
     facilities: {
