@@ -84,7 +84,16 @@ module.exports = {
           body: {
             query: {
               bool: {
-                must: [{ match: { id: identifier } }],
+                must: [
+                  { match: { id: identifier } },
+                  {
+                    wildcard: {
+                      ciCR6BBvIT4: {
+                        value: `*${phone}`,
+                      },
+                    },
+                  },
+                ],
               },
             },
           },
