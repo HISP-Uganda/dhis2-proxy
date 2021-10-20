@@ -52,7 +52,7 @@ module.exports = {
               Date.parse(data.DOSE2.eventDate)
             )},${data.DOSE2.orgUnitName},${
               data.DOSE2.districtName || ""
-            }\n\nClick to verify\nhttps://epivac.health.go.ug/certificates/#/validate/${
+            }\n\nClick to verify\nhttps://services.dhis2.hispuganda.org/certificates/validate/${
               data.trackedEntityInstance
             }`,
             { margin: 0 }
