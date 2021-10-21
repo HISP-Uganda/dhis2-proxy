@@ -5,10 +5,16 @@ const { isEmpty } = require("lodash");
  * @typedef {import('moleculer').Context} Context Moleculer's Context
  */
 
-const NAME_ATTRIBUTE = "sB1IHYu2xQT";
-const SEX_ATTRIBUTE = "FZzQbW8AWVd";
-const DOB_ATTRIBUTE = "NI0QRzJvQ0k";
-const PHONE_ATTRIBUTE = "ciCR6BBvIT4";
+const NAME_ATTRIBUTE = 'sB1IHYu2xQT';
+const SEX_ATTRIBUTE = 'FZzQbW8AWVd';
+const DOB_ATTRIBUTE = 'NI0QRzJvQ0k';
+const PHONE_ATTRIBUTE = 'ciCR6BBvIT4';
+
+const ELSEWHERE_IN_COUNTRY_DISTRICT = 'ObwW38YrQHu';
+const ELSEWHERE_OUT_COUNTRY = 'ONsseOxElW9';
+const ELSEWHERE_VACCINE = 'wwX1eEiYLGR';
+const ELSEWHERE_MAN = 'taGJD9hkX0s';
+const ELSEWHERE_BATCH = 'muCgXjnCfnS';
 
 module.exports = {
   name: "certificates",
