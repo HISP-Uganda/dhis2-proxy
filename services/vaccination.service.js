@@ -23,26 +23,26 @@ const defence = axios.create({
 });
 
 const PROGRAM = "yDuAzyqYABS";
-const ATTRIBUTE = "sB1IHYu2xQT";
-const NAME_ATTRIBUTE = "sB1IHYu2xQT";
-const NIN_ATTRIBUTE = "Ewi7FUfcHAD";
-const PROGRAM_STAGE = "a1jCssI2LkW";
-const OTHER_ID = "YvnFn4IjKzx";
-const VACCINATION_CARD_NO = "hDdStedsrHN";
-const SEX_ATTRIBUTE = "FZzQbW8AWVd";
-const DOB_ATTRIBUTE = "NI0QRzJvQ0k";
-const PHONE_ATTRIBUTE = "ciCR6BBvIT4";
-const BATCH_ATTRIBUTE = "Yp1F4txx8tm";
-const VACCINE_ATTRIBUTE = "bbnyNYD1wgS";
-const MFG_ATTRIBUTE = "rpkH9ZPGJcX";
-const ELSEWHERE_DATE = "lySxMCMSo8Z";
-const ELSEWHERE_IN_COUNTRY_DISTRICT = "ObwW38YrQHu";
-const ELSEWHERE_IN_COUNTRY_FACILITY = "X7tI86pr1y0";
-const ELSEWHERE_OUT_COUNTRY = "ONsseOxElW9";
-const ELSEWHERE_OUT_COUNTRY_FACILITY = "OW3erclrDW8";
-const ELSEWHERE_VACCINE = "wwX1eEiYLGR";
-const ELSEWHERE_MAN = "taGJD9hkX0s";
-const ELSEWHERE_BATCH = "muCgXjnCfnS";
+// const ATTRIBUTE = "sB1IHYu2xQT";
+// const NAME_ATTRIBUTE = "sB1IHYu2xQT";
+// const NIN_ATTRIBUTE = "Ewi7FUfcHAD";
+// const PROGRAM_STAGE = "a1jCssI2LkW";
+// const OTHER_ID = "YvnFn4IjKzx";
+// const VACCINATION_CARD_NO = "hDdStedsrHN";
+// const SEX_ATTRIBUTE = "FZzQbW8AWVd";
+// const DOB_ATTRIBUTE = "NI0QRzJvQ0k";
+// const PHONE_ATTRIBUTE = "ciCR6BBvIT4";
+// const BATCH_ATTRIBUTE = "Yp1F4txx8tm";
+// const VACCINE_ATTRIBUTE = "bbnyNYD1wgS";
+// const MFG_ATTRIBUTE = "rpkH9ZPGJcX";
+// const ELSEWHERE_DATE = "lySxMCMSo8Z";
+// const ELSEWHERE_IN_COUNTRY_DISTRICT = "ObwW38YrQHu";
+// const ELSEWHERE_IN_COUNTRY_FACILITY = "X7tI86pr1y0";
+// const ELSEWHERE_OUT_COUNTRY = "ONsseOxElW9";
+// const ELSEWHERE_OUT_COUNTRY_FACILITY = "OW3erclrDW8";
+// const ELSEWHERE_VACCINE = "wwX1eEiYLGR";
+// const ELSEWHERE_MAN = "taGJD9hkX0s";
+// const ELSEWHERE_BATCH = "muCgXjnCfnS";
 
 module.exports = {
   name: "vaccination",
@@ -57,7 +57,7 @@ module.exports = {
   /**
    * Dependencies
    */
-  dependencies: ["utils", "es"],
+  dependencies: ["utils", "es", "epivac"],
 
   /**
    * Actions
@@ -104,112 +104,41 @@ module.exports = {
     },
     updateTrackedEntityInstance: {
       async handler(ctx) {
-        const { identifier, dob } = ctx.params;
-        let results = {};
-        const [
-          {
-            data: { trackedEntityInstances: epivacByNIN },
-          },
-          {
-            data: { trackedEntityInstances: epivacByOther },
-          },
-          // {
-          //   data: { trackedEntityInstances: defenceByNIN },
-          // },
-          // {
-          //   data: { trackedEntityInstances: defenceByOther },
-          // },
-        ] = await Promise.all([
-          epivac.get("trackedEntityInstances.json", {
-            params: {
-              program: PROGRAM,
-              ouMode: "ALL",
-              filter: `${NIN_ATTRIBUTE}:EQ:${identifier}`,
-            },
-          }),
-          epivac.get("trackedEntityInstances.json", {
-            params: {
-              program: PROGRAM,
-              ouMode: "ALL",
-              filter: `${OTHER_ID}:EQ:${identifier}`,
-            },
-          }),
-          // defence.get("trackedEntityInstances.json", {
-          //   params: {
-          //     program: PROGRAM,
-          //     ouMode: "ALL",
-          //     filter: `${NIN_ATTRIBUTE}:EQ:${identifier}`,
-          //   },
-          // }),
-          // defence.get("trackedEntityInstances.json", {
-          //   params: {
-          //     program: PROGRAM,
-          //     ouMode: "ALL",
-          //     filter: `${OTHER_ID}:EQ:${identifier}`,
-          //   },
-          // }),
-        ]);
-        if (epivacByNIN.length === 1) {
-          let [instance] = epivacByNIN;
-          const attributes = instance.attributes.map((a) => {
-            if (a.attribute === DOB_ATTRIBUTE) {
-              return { ...a, value: dob };
-            }
-            return a;
+        const { identifier, dob, phone } = ctx.params;
+        let result1 = {};
+        let result2 = {};
+        try {
+          result1 = await ctx.call("epivac.update", {
+            identifier,
+            phone,
+            dob,
+            isEpivac: true,
           });
-          instance = { ...instance, attributes };
-          await epivac.post("trackedEntityInstances", instance);
-          const { data } = await epivac.get(
-            `trackedEntityInstances/${instance.trackedEntityInstance}`,
-            {
-              params: {
-                program: PROGRAM,
-                fields: "*",
-              },
-            }
-          );
-          await ctx.call("utils.processInstances", {
-            trackedEntityInstances: [data],
-          });
-          results = { ...results, epivac: true };
-        } else if (epivacByNIN.length > 1) {
-          results = {
-            ...results,
-            epivac: false,
-            reason: `More than one record found with identifier ${identifier}`,
+        } catch (error) {
+          result1 = {
+            updated: false,
+            reason: error.message,
           };
         }
-        if (epivacByOther.length === 1) {
-          let [instance] = epivacByNIN;
-          const attributes = instance.attributes.map((a) => {
-            if (a.attribute === DOB_ATTRIBUTE) {
-              return { ...a, value: dob };
-            }
-            return a;
+
+        try {
+          result2 = await ctx.call("epivac.update", {
+            identifier,
+            phone,
+            dob,
+            isEpivac: false,
           });
-          instance = { ...instance, attributes };
-          await epivac.post("trackedEntityInstances", instance);
-          const { data } = await epivac.get(
-            `trackedEntityInstances/${instance.trackedEntityInstance}`,
-            {
-              params: {
-                program: PROGRAM,
-                fields: "*",
-              },
-            }
-          );
-          await ctx.call("utils.processInstances", {
-            trackedEntityInstances: [data],
-          });
-          results = { ...results, epivac: true };
-        } else if (epivacByOther.length > 1) {
-          results = {
-            ...results,
-            epivac: false,
-            reason: `More than one record found with identifier ${identifier}`,
+        } catch (error) {
+          result2 = {
+            updated: false,
+            reason: error.message,
           };
         }
-        return results;
+
+        if (!result1.updated && !result2.updated) {
+          return result1;
+        }
+        return { update: true, reason: "" };
       },
     },
     defenceData: {
