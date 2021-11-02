@@ -138,7 +138,7 @@ module.exports = {
         if (!result1.updated && !result2.updated) {
           return result1;
         }
-        return { update: true, reason: "" };
+        return { updated: true, reason: "" };
       },
     },
     defenceData: {
