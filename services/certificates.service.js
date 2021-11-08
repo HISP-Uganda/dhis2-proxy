@@ -47,23 +47,23 @@ module.exports = {
         let data = await ctx.call("es.searchByIdAndPhone", ctx.params);
         if (
           !isEmpty(data) &&
-          data.DOSE1 &&
-          data.DOSE1.bbnyNYD1wgS === "Johnson and Johnson"
+          data.DOSE2 &&
+          data.DOSE2.bbnyNYD1wgS === "Johnson and Johnson"
         ) {
           if (
-            differenceInDays(new Date(), parseISO(data.DOSE1.eventDate)) >= 14
+            differenceInDays(new Date(), parseISO(data.DOSE2.eventDate)) >= 14
           ) {
             const qr = await QRCode.toDataURL(
               `Name:${data[NAME_ATTRIBUTE]}\nIdentifier:${data.id}\nSex:${
                 data[SEX_ATTRIBUTE]
               }\nDOB:${data[DOB_ATTRIBUTE] || " "}\nPHONE:${
                 data[PHONE_ATTRIBUTE]
-              }\n${data.DOSE1.bbnyNYD1wgS}:${new Intl.DateTimeFormat(
+              }\n${data.DOSE2.bbnyNYD1wgS}:${new Intl.DateTimeFormat(
                 "fr"
               ).format(Date.parse(data.DOSE1.eventDate))},${
-                data.DOSE1.orgUnitName
+                data.DOSE2.orgUnitName
               },${
-                data.DOSE1.districtName || ""
+                data.DOSE2.districtName || ""
               }\n\nClick to verify\nhttps://epivac.health.go.ug/certificates/#/validate/${
                 data.trackedEntityInstance
               }`,
