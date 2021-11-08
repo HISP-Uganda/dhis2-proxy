@@ -60,7 +60,7 @@ module.exports = {
                 data[PHONE_ATTRIBUTE]
               }\n${data.DOSE2.bbnyNYD1wgS}:${new Intl.DateTimeFormat(
                 "fr"
-              ).format(Date.parse(data.DOSE1.eventDate))},${
+              ).format(Date.parse(data.DOSE2.eventDate))},${
                 data.DOSE2.orgUnitName
               },${
                 data.DOSE2.districtName || ""
