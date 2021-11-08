@@ -45,7 +45,42 @@ module.exports = {
       },
       async handler(ctx) {
         let data = await ctx.call("es.searchByIdAndPhone", ctx.params);
-        if (!isEmpty(data) && data.DOSE1 && data.DOSE2) {
+        if (
+          !isEmpty(data) &&
+          data.DOSE1 &&
+          data.DOSE1.bbnyNYD1wgS === "Johnson and Johnson"
+        ) {
+          if (
+            differenceInDays(new Date(), parseISO(data.DOSE1.eventDate)) >= 14
+          ) {
+            const qr = await QRCode.toDataURL(
+              `Name:${data[NAME_ATTRIBUTE]}\nIdentifier:${data.id}\nSex:${
+                data[SEX_ATTRIBUTE]
+              }\nDOB:${data[DOB_ATTRIBUTE] || " "}\nPHONE:${
+                data[PHONE_ATTRIBUTE]
+              }\n${data.DOSE1.bbnyNYD1wgS}:${new Intl.DateTimeFormat(
+                "fr"
+              ).format(Date.parse(data.DOSE1.eventDate))},${
+                data.DOSE1.orgUnitName
+              },${
+                data.DOSE1.districtName || ""
+              }\n\nClick to verify\nhttps://epivac.health.go.ug/certificates/#/validate/${
+                data.trackedEntityInstance
+              }`,
+              { margin: 0 }
+            );
+            return { ...data, qr, eligible: true, doses: 1 };
+          } else {
+            return {
+              ...data,
+              eligible: false,
+              message: `Your certificate is not yet ready please try again after ${differenceInDays(
+                new Date(),
+                parseISO(data.DOSE1.eventDate)
+              )} days`,
+            };
+          }
+        } else if (!isEmpty(data) && data.DOSE1 && data.DOSE2) {
           if (
             differenceInDays(new Date(), parseISO(data.DOSE2.eventDate)) >= 14
           ) {
@@ -69,14 +104,15 @@ module.exports = {
               }`,
               { margin: 0 }
             );
-            return { ...data, qr, eligible: true };
+            return { ...data, qr, eligible: true, doses: 2 };
           } else {
             return {
               ...data,
               eligible: false,
-              message: `Your certificate is not yet ready please try again after ${
-                7 - differenceInDays(new Date(), parseISO(data.DOSE2.eventDate))
-              } days`,
+              message: `Your certificate is not yet ready please try again after ${differenceInDays(
+                new Date(),
+                parseISO(data.DOSE2.eventDate)
+              )} days`,
             };
           }
         } else if (!isEmpty(data) && data.DOSE2 && data.DOSE2.vk2nF6wZwY4) {
@@ -97,7 +133,7 @@ module.exports = {
                 data.DOSE2[ELSEWHERE_IN_COUNTRY_DISTRICT] ||
                 data.DOSE2[ELSEWHERE_OUT_COUNTRY],
             };
-            data = { ...data, DOSE1: event, eligible: true };
+            data = { ...data, DOSE1: event, eligible: true, doses: 2 };
             const qr = await QRCode.toDataURL(
               `Name:${data[NAME_ATTRIBUTE]}\nIdentifier:${data.id}\nSex:${
                 data[SEX_ATTRIBUTE]
@@ -123,9 +159,10 @@ module.exports = {
             return {
               ...data,
               eligible: false,
-              message: `Your certificate is not yet ready please try again after ${
-                7 - differenceInDays(new Date(), parseISO(data.DOSE2.eventDate))
-              } days`,
+              message: `Your certificate is not yet ready please try again after ${differenceInDays(
+                new Date(),
+                parseISO(data.DOSE2.eventDate)
+              )} days`,
             };
           }
         } else if (!isEmpty(data) && data.DOSE2 && !data.DOSE2.vk2nF6wZwY4) {
