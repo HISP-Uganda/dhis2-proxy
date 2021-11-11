@@ -74,10 +74,10 @@ module.exports = {
             return {
               ...data,
               eligible: false,
-              message: `Your certificate is not yet ready please try again after ${differenceInDays(
-                new Date(),
-                parseISO(data.DOSE1.eventDate)
-              )} days`,
+              message: `Your certificate is not yet ready please try again after ${
+                14 -
+                differenceInDays(new Date(), parseISO(data.DOSE1.eventDate))
+              } days`,
             };
           }
         } else if (!isEmpty(data) && data.DOSE1 && data.DOSE2) {
@@ -109,10 +109,10 @@ module.exports = {
             return {
               ...data,
               eligible: false,
-              message: `Your certificate is not yet ready please try again after ${differenceInDays(
-                new Date(),
-                parseISO(data.DOSE2.eventDate)
-              )} days`,
+              message: `Your certificate is not yet ready please try again after ${
+                14 -
+                differenceInDays(new Date(), parseISO(data.DOSE2.eventDate))
+              } days`,
             };
           }
         } else if (!isEmpty(data) && data.DOSE2 && data.DOSE2.vk2nF6wZwY4) {
@@ -159,10 +159,10 @@ module.exports = {
             return {
               ...data,
               eligible: false,
-              message: `Your certificate is not yet ready please try again after ${differenceInDays(
-                new Date(),
-                parseISO(data.DOSE2.eventDate)
-              )} days`,
+              message: `Your certificate is not yet ready please try again after ${
+                14 -
+                differenceInDays(new Date(), parseISO(data.DOSE2.eventDate))
+              } days`,
             };
           }
         } else if (!isEmpty(data) && data.DOSE2 && !data.DOSE2.vk2nF6wZwY4) {
