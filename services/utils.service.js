@@ -36,6 +36,8 @@ module.exports = {
             "instance.processInstance",
             instance
           );
+
+          console.log(currentData);
           if (currentData.id) {
             const previous = await ctx.call("es.search", {
               index: "certificates",
