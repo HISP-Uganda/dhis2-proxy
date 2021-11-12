@@ -36,8 +36,6 @@ module.exports = {
             "instance.processInstance",
             instance
           );
-
-          console.log(currentData);
           if (currentData.id) {
             const previous = await ctx.call("es.search", {
               index: "certificates",
@@ -60,6 +58,7 @@ module.exports = {
             instances.push(currentData);
           }
         }
+        console.log(instances);
         return await ctx.call("es.bulk", {
           index: "certificates",
           dataset: instances,
