@@ -63,7 +63,6 @@ module.exports = {
           dataset: instances,
           id: "id",
         });
-        console.log(response);
         return response;
       },
     },

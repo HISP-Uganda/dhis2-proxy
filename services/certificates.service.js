@@ -45,6 +45,7 @@ module.exports = {
       },
       async handler(ctx) {
         let data = await ctx.call("es.searchByIdAndPhone", ctx.params);
+        console.log(data)
         if (
           !isEmpty(data) &&
           data.DOSE1 &&
@@ -154,7 +155,7 @@ module.exports = {
               }`,
               { margin: 0 }
             );
-            return { ...data, qr };
+            return { ...data, qr, doses: 2 };
           } else {
             return {
               ...data,
