@@ -58,12 +58,13 @@ module.exports = {
             instances.push(currentData);
           }
         }
-        console.log(instances);
-        return await ctx.call("es.bulk", {
+        const response =  await ctx.call("es.bulk", {
           index: "certificates",
           dataset: instances,
           id: "id",
         });
+        console.log(response);
+        return response;
       },
     },
   },
