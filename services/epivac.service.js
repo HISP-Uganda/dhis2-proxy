@@ -94,9 +94,9 @@ module.exports = {
                 },
               }
             );
-            await ctx.call("utils.processInstances", {
-              trackedEntityInstances: [data],
-            });
+            // await ctx.call("utils.processInstances", {
+            //   trackedEntityInstances: [data],
+            // });
           }
           results = { ...results, updated: true, reason: "" };
         }
@@ -119,9 +119,9 @@ module.exports = {
                 },
               }
             );
-            await ctx.call("utils.processInstances", {
-              trackedEntityInstances: [data],
-            });
+            // await ctx.call("utils.processInstances", {
+            //   trackedEntityInstances: [data],
+            // });
             results = { ...results, updated: true, reason: "" };
           }
         }
