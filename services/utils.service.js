@@ -21,7 +21,7 @@ module.exports = {
   /**
    * Dependencies
    */
-  dependencies: ["instance"],
+  dependencies: ["instance", "es"],
 
   /**
    * Actions

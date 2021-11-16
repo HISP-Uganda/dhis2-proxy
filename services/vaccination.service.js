@@ -44,7 +44,7 @@ module.exports = {
   /**
    * Dependencies
    */
-  dependencies: ["es", "epicav"],
+  dependencies: ["es"],
 
   /**
    * Actions
@@ -157,45 +157,45 @@ module.exports = {
         return currentData;
       },
     },
-    updateTrackedEntityInstance: {
-      async handler(ctx) {
-        const { identifier, dob, phone } = ctx.params;
-        let result1 = {};
-        let result2 = {};
-        try {
-          result1 = await ctx.call("epivac.update", {
-            identifier,
-            phone,
-            dob,
-            isEpivac: true,
-          });
-        } catch (error) {
-          result1 = {
-            updated: false,
-            reason: error.message,
-          };
-        }
+    // updateTrackedEntityInstance: {
+    //   async handler(ctx) {
+    //     const { identifier, dob, phone } = ctx.params;
+    //     let result1 = {};
+    //     let result2 = {};
+    //     try {
+    //       result1 = await ctx.call("epivac.update", {
+    //         identifier,
+    //         phone,
+    //         dob,
+    //         isEpivac: true,
+    //       });
+    //     } catch (error) {
+    //       result1 = {
+    //         updated: false,
+    //         reason: error.message,
+    //       };
+    //     }
 
-        try {
-          result2 = await ctx.call("epivac.update", {
-            identifier,
-            phone,
-            dob,
-            isEpivac: false,
-          });
-        } catch (error) {
-          result2 = {
-            updated: false,
-            reason: error.message,
-          };
-        }
+    //     try {
+    //       result2 = await ctx.call("epivac.update", {
+    //         identifier,
+    //         phone,
+    //         dob,
+    //         isEpivac: false,
+    //       });
+    //     } catch (error) {
+    //       result2 = {
+    //         updated: false,
+    //         reason: error.message,
+    //       };
+    //     }
 
-        if (!result1.updated && !result2.updated) {
-          return result1;
-        }
-        return { updated: true, reason: "" };
-      },
-    },
+    //     if (!result1.updated && !result2.updated) {
+    //       return result1;
+    //     }
+    //     return { updated: true, reason: "" };
+    //   },
+    // },
   },
 
   /**
