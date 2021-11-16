@@ -61,7 +61,7 @@ module.exports = {
         });
 
         let doseUnits = [];
-        const data = this.fetchCertificate(identifier, phone);
+        let data = this.fetchCertificate(identifier, phone);
 
         if (previous.length > 0) {
           const previousData = previous[0]._source;
