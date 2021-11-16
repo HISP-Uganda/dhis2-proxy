@@ -61,7 +61,7 @@ module.exports = {
         });
 
         let doseUnits = [];
-        let data = this.fetchCertificate(identifier, phone);
+        let data = await this.fetchCertificate(identifier, phone);
 
         if (previous.length > 0) {
           const previousData = previous[0]._source;
@@ -147,7 +147,7 @@ module.exports = {
           }
         }
         const currentData = { ...data, DOSE1, DOSE2, id: identifier };
-        console.log(currentData)
+        console.log(currentData);
         await ctx.call("es.bulk", {
           index: "certificates",
           dataset: [currentData],
