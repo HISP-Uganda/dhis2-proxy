@@ -7,6 +7,7 @@
 const axios = require("axios");
 const { fromPairs, groupBy, uniq } = require("lodash");
 const mergeByKey = require("array-merge-by-key");
+const defenceSites = require("./defenceSites.json");
 
 const epivac = axios.create({
   baseURL: "https://epivac.health.go.ug/api/",
@@ -28,6 +29,7 @@ const PROGRAM = "yDuAzyqYABS";
 const NIN_ATTRIBUTE = "Ewi7FUfcHAD";
 const OTHER_ID = "YvnFn4IjKzx";
 const PHONE_ATTRIBUTE = "ciCR6BBvIT4";
+let defenceUnits = {};
 
 module.exports = {
   name: "vaccination",
@@ -353,7 +355,9 @@ module.exports = {
   /**
    * Service started lifecycle event handler
    */
-  async started() {},
+  async started() {
+    defenceUnits = fromPairs(defenceSites.map((ou) => [ou.id, ou.name]));
+  },
 
   /**
    * Service stopped lifecycle event handler
