@@ -44,8 +44,7 @@ module.exports = {
         path: "/",
       },
       async handler(ctx) {
-        let data = await ctx.call("es.searchByIdAndPhone", ctx.params);
-        console.log(data)
+        let data = await ctx.call("vaccination.certificate", ctx.params);
         if (
           !isEmpty(data) &&
           data.DOSE1 &&

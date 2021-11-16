@@ -58,7 +58,7 @@ module.exports = {
             instances.push(currentData);
           }
         }
-        const response =  await ctx.call("es.bulk", {
+        const response = await ctx.call("es.bulk", {
           index: "certificates",
           dataset: instances,
           id: "id",
@@ -76,44 +76,7 @@ module.exports = {
   /**
    * Methods
    */
-  methods: {
-    processInstance(instance) {
-      const { attributes, enrollments, trackedEntityInstance } = instance;
-      const enroll = enrollments.filter((en) => en.program === PROGRAM);
-      const allEvents = flatten(enroll.map((en) => en.events));
-      let results = fromPairs(attributes.map((a) => [a.attribute, a.value]));
-      const id = `${results[NIN_ATTRIBUTE] || ""}${results[OTHER_ID] || ""}`;
-      let processedEvents = allEvents
-        .filter(
-          (event) =>
-            !!event.eventDate &&
-            event.deleted === false &&
-            event.programStage === PROGRAM_STAGE
-        )
-        .map(({ dataValues, relationships, notes, ...others }) => {
-          return {
-            ...others,
-            ...fromPairs(dataValues.map((dv) => [dv.dataElement, dv.value])),
-          };
-        });
-      const allFacilities = uniq(processedEvents.map((e) => e.orgUnit));
-      const groupedData = groupBy(processedEvents, "LUIsbsm3okG");
-      const pp = Object.entries(groupedData).map(([dose, allDoses]) => {
-        const gotDoses = mergeByKey("LUIsbsm3okG", allDoses);
-        return [dose, gotDoses.length > 0 ? gotDoses[0] : {}];
-      });
-      return {
-        ...results,
-        certificate: Math.floor(
-          Math.random() * (99999999 - 10000000 + 1) + 10000000
-        ),
-        trackedEntityInstance,
-        id,
-        ...fromPairs(pp),
-        facilities: allFacilities,
-      };
-    },
-  },
+  methods: {},
 
   /**
    * Service created lifecycle event handler

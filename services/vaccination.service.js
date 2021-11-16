@@ -5,6 +5,8 @@
  */
 
 const axios = require("axios");
+const { fromPairs, groupBy, uniq } = require("lodash");
+const mergeByKey = require("array-merge-by-key");
 
 const epivac = axios.create({
   baseURL: "https://epivac.health.go.ug/api/",
@@ -23,26 +25,9 @@ const defence = axios.create({
 });
 
 const PROGRAM = "yDuAzyqYABS";
-// const ATTRIBUTE = "sB1IHYu2xQT";
-// const NAME_ATTRIBUTE = "sB1IHYu2xQT";
-// const NIN_ATTRIBUTE = "Ewi7FUfcHAD";
-// const PROGRAM_STAGE = "a1jCssI2LkW";
-// const OTHER_ID = "YvnFn4IjKzx";
-// const VACCINATION_CARD_NO = "hDdStedsrHN";
-// const SEX_ATTRIBUTE = "FZzQbW8AWVd";
-// const DOB_ATTRIBUTE = "NI0QRzJvQ0k";
-// const PHONE_ATTRIBUTE = "ciCR6BBvIT4";
-// const BATCH_ATTRIBUTE = "Yp1F4txx8tm";
-// const VACCINE_ATTRIBUTE = "bbnyNYD1wgS";
-// const MFG_ATTRIBUTE = "rpkH9ZPGJcX";
-// const ELSEWHERE_DATE = "lySxMCMSo8Z";
-// const ELSEWHERE_IN_COUNTRY_DISTRICT = "ObwW38YrQHu";
-// const ELSEWHERE_IN_COUNTRY_FACILITY = "X7tI86pr1y0";
-// const ELSEWHERE_OUT_COUNTRY = "ONsseOxElW9";
-// const ELSEWHERE_OUT_COUNTRY_FACILITY = "OW3erclrDW8";
-// const ELSEWHERE_VACCINE = "wwX1eEiYLGR";
-// const ELSEWHERE_MAN = "taGJD9hkX0s";
-// const ELSEWHERE_BATCH = "muCgXjnCfnS";
+const NIN_ATTRIBUTE = "Ewi7FUfcHAD";
+const OTHER_ID = "YvnFn4IjKzx";
+const PHONE_ATTRIBUTE = "ciCR6BBvIT4";
 
 module.exports = {
   name: "vaccination",
@@ -57,149 +42,118 @@ module.exports = {
   /**
    * Dependencies
    */
-  dependencies: ["utils", "es", "epivac"],
+  dependencies: ["es"],
 
   /**
    * Actions
    */
   actions: {
-    epivacData: {
+    certificate: {
       async handler(ctx) {
-        const params = {
-          program: PROGRAM,
-          ouMode: "ALL",
-          totalPages: true,
-          page: 1,
-          fields: "*",
-          pageSize: 1000,
-          ...ctx.params,
-        };
-        const {
-          data: {
-            trackedEntityInstances,
-            pager: { pageCount },
+        const { phone, identifier } = ctx.params;
+        const previous = await ctx.call("es.search", {
+          index: "certificates",
+          body: {
+            query: {
+              match: { id: identifier },
+            },
           },
-        } = await epivac.get("trackedEntityInstances.json", {
-          params,
         });
 
-        await ctx.call("utils.processInstances", {
-          trackedEntityInstances,
-        });
-        if (pageCount > 1) {
-          for (let page = 2; page <= pageCount; page++) {
-            console.log(`Processing ${page} of ${pageCount}`);
-            const {
-              data: { trackedEntityInstances },
-            } = await epivac.get("trackedEntityInstances.json", {
-              params: { ...params, page },
-            });
-            await ctx.call("utils.processInstances", {
-              trackedEntityInstances,
-            });
-          }
-        }
-        return "finished";
-      },
-    },
-    updateTrackedEntityInstance: {
-      async handler(ctx) {
-        const { identifier, dob, phone } = ctx.params;
-        let result1 = {};
-        let result2 = {};
-        try {
-          result1 = await ctx.call("epivac.update", {
-            identifier,
-            phone,
-            dob,
-            isEpivac: true,
-          });
-        } catch (error) {
-          result1 = {
-            updated: false,
-            reason: error.message,
+        let doseUnits = [];
+        const data = this.fetchCertificate(identifier, phone);
+
+        if (previous.length > 0) {
+          const previousData = previous[0]._source;
+          data = {
+            ...data,
+            certificate: previousData.certificate
+              ? previousData.certificate
+              : Math.floor(
+                  Math.random() * (99999999 - 10000000 + 1) + 10000000
+                ),
           };
         }
 
-        try {
-          result2 = await ctx.call("epivac.update", {
-            identifier,
-            phone,
-            dob,
-            isEpivac: false,
-          });
-        } catch (error) {
-          result2 = {
-            updated: false,
-            reason: error.message,
+        if (data.DOSE1) {
+          doseUnits.push(data.DOSE1.orgUnit);
+        }
+
+        if (data.DOSE2) {
+          doseUnits.push(data.DOSE2.orgUnit);
+        }
+
+        const allFacilities = uniq(doseUnits);
+
+        const facilities = await Promise.all(
+          allFacilities.map((id) => {
+            return ctx.call("es.search", {
+              index: "facilities",
+              body: {
+                query: {
+                  match: { id },
+                },
+              },
+            });
+          })
+        );
+
+        let foundFacilities = fromPairs(
+          facilities
+            .map(([data]) => {
+              if (data && data._source) {
+                const {
+                  _source: { id, ...rest },
+                } = data;
+                return [id, { id, ...rest }];
+              }
+              return null;
+            })
+            .filter((d) => d !== null)
+        );
+
+        let DOSE1 = data.DOSE1;
+        let DOSE2 = data.DOSE2;
+
+        if (DOSE1) {
+          const facility = foundFacilities[DOSE1.orgUnit] || {};
+          DOSE1 = {
+            ...DOSE1,
+            ...facility,
           };
-        }
-
-        if (!result1.updated && !result2.updated) {
-          return result1;
-        }
-        return { updated: true, reason: "" };
-      },
-    },
-    defenceData: {
-      async handler(ctx) {
-        const params = {
-          program: PROGRAM,
-          ouMode: "ALL",
-          totalPages: true,
-          page: 1,
-          pageSize: 1000,
-          fields: "*",
-          ...ctx.params,
-        };
-        const {
-          data: {
-            trackedEntityInstances,
-            pager: { pageCount },
-          },
-        } = await defence.get("trackedEntityInstances.json", {
-          params,
-        });
-
-        const response = await ctx.call("utils.processInstances", {
-          trackedEntityInstances,
-        });
-        if (pageCount > 1) {
-          for (let page = 2; page <= pageCount; page++) {
-            console.log(`Processing ${page} of ${pageCount}`);
-            const {
-              data: { trackedEntityInstances },
-            } = await defence.get("trackedEntityInstances.json", {
-              params: { ...params, page },
-            });
-            await ctx.call("utils.processInstances", {
-              trackedEntityInstances,
-            });
+          const siteChange = defenceUnits[DOSE1.orgUnit];
+          if (siteChange) {
+            DOSE1 = {
+              ...DOSE1,
+              name: siteChange,
+              orgUnitName: siteChange,
+            };
           }
         }
-        return response;
-      },
-    },
-    facilities: {
-      async handler(ctx) {
-        const params = {
-          fields:
-            "organisationUnits[id,name,parent[id,name,parent[id,name,parent[id,name,parent[id,name]]]]]",
-        };
-        const {
-          data: { organisationUnits },
-        } = await epivac.get(`programs/yDuAzyqYABS`, { params });
-        const processed = this.processFacilities(organisationUnits);
+
+        if (DOSE2) {
+          const facility = foundFacilities[DOSE2.orgUnit] || {};
+          DOSE2 = {
+            ...DOSE2,
+            ...facility,
+          };
+          const siteChange = defenceUnits[DOSE2.orgUnit];
+          if (siteChange) {
+            DOSE2 = {
+              ...DOSE2,
+              name: siteChange,
+              orgUnitName: siteChange,
+            };
+          }
+        }
+        const currentData = { ...data, DOSE1, DOSE2, id: identifier };
+
         await ctx.call("es.bulk", {
-          index: "facilities",
-          dataset: processed,
+          index: "certificates",
+          dataset: [currentData],
           id: "id",
         });
-      },
-    },
-    index: {
-      async handler(ctx) {
-        return await ctx.call("es.createIndex", { index: "certificates" });
+        return currentData;
       },
     },
   },
@@ -213,6 +167,137 @@ module.exports = {
    * Methods
    */
   methods: {
+    async processTrackedEntityInstances(trackedEntityInstances) {
+      const [{ attributes }] = trackedEntityInstances;
+      const trackedEntityInstance = trackedEntityInstances
+        .map((tei) => tei.trackedEntityInstance)
+        .join(",");
+
+      const allEvents = trackedEntityInstances.flatMap((tei) => {
+        return tei.enrollments.flatMap((en) => {
+          if (en.program === PROGRAM) {
+            return en.events.map(
+              ({ dataValues, relationships, notes, ...others }) => {
+                return {
+                  ...others,
+                  ...fromPairs(
+                    dataValues.map((dv) => [dv.dataElement, dv.value])
+                  ),
+                };
+              }
+            );
+          }
+          return [];
+        });
+      });
+      const doses = groupBy(
+        allEvents.filter(({ deleted }) => !deleted),
+        "LUIsbsm3okG"
+      );
+      const pp = Object.entries(doses).map(([dose, allDoses]) => {
+        const gotDoses = mergeByKey("LUIsbsm3okG", allDoses);
+        return [dose, gotDoses.length > 0 ? gotDoses[0] : {}];
+      });
+
+      return {
+        ...fromPairs(attributes.map((a) => [a.attribute, a.value])),
+        ...fromPairs(pp),
+        trackedEntityInstance,
+      };
+    },
+    async fetchCertificate(identifier, phone) {
+      const params = [
+        {
+          name: "program",
+          value: PROGRAM,
+        },
+        {
+          name: "filter",
+          value: `${NIN_ATTRIBUTE}:EQ:${identifier}`,
+        },
+        {
+          name: "filter",
+          value: `${PHONE_ATTRIBUTE}:LIKE:${phone}`,
+        },
+        {
+          name: "fields",
+          value: "*",
+        },
+        {
+          name: "ouMode",
+          value: "ALL",
+        },
+      ];
+
+      const params1 = [
+        {
+          name: "program",
+          value: PROGRAM,
+        },
+        {
+          name: "filter",
+          value: `${OTHER_ID}:EQ:${identifier}`,
+        },
+        {
+          name: "filter",
+          value: `${PHONE_ATTRIBUTE}:LIKE:${phone}`,
+        },
+        {
+          name: "fields",
+          value: "*",
+        },
+        {
+          name: "ouMode",
+          value: "ALL",
+        },
+      ];
+
+      const p1 = params.map((x) => `${x.name}=${x.value}`).join("&");
+      const p2 = params1.map((x) => `${x.name}=${x.value}`).join("&");
+
+      const [
+        {
+          data: { trackedEntityInstances: epivacByNIN },
+        },
+        {
+          data: { trackedEntityInstances: epivacByOther },
+        },
+      ] = await Promise.all([
+        epivac.get(`trackedEntityInstances.json?${p1}`),
+        epivac.get(`trackedEntityInstances.json?${p2}`),
+      ]);
+
+      let epivacData = {};
+      let defenceData = {};
+      if (epivacByNIN.length > 0 && epivacByOther.length > 0) {
+      } else if (epivacByNIN.length > 0) {
+        epivacData = await this.processTrackedEntityInstances(epivacByNIN);
+      } else if (epivacByOther.length > 0) {
+        epivacData = await this.processTrackedEntityInstances(epivacByOther);
+      }
+
+      const [
+        {
+          data: { trackedEntityInstances: defenceByNIN },
+        },
+        {
+          data: { trackedEntityInstances: defenceByOther },
+        },
+      ] = await Promise.all([
+        defence.get(`trackedEntityInstances.json?${p1}`),
+        defence.get(`trackedEntityInstances.json?${p2}`),
+      ]);
+
+      if (defenceByNIN.length > 0 && defenceByOther.length > 0) {
+      } else if (defenceByNIN.length > 0) {
+        defenceData = await this.processTrackedEntityInstances(defenceByNIN);
+      } else if (defenceByOther.length > 0) {
+        defenceData = await this.processTrackedEntityInstances(defenceByOther);
+      }
+
+      return { ...defenceData, ...epivacData };
+    },
+
     processFacilities(organisationUnits) {
       return organisationUnits.map((unit) => {
         const { id, name } = unit;
@@ -268,13 +353,7 @@ module.exports = {
   /**
    * Service started lifecycle event handler
    */
-  async started() {
-    // try {
-    //   console.log(this.actions.index("certificates"));
-    // } catch (error) {
-    //   console.log(error.message);
-    // }
-  },
+  async started() {},
 
   /**
    * Service stopped lifecycle event handler
