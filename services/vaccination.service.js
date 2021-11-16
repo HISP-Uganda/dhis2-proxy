@@ -295,45 +295,52 @@ module.exports = {
       const p1 = params.map((x) => `${x.name}=${x.value}`).join("&");
       const p2 = params1.map((x) => `${x.name}=${x.value}`).join("&");
 
-      const [
-        {
-          data: { trackedEntityInstances: epivacByNIN },
-        },
-        {
-          data: { trackedEntityInstances: epivacByOther },
-        },
-      ] = await Promise.all([
-        epivac.get(`trackedEntityInstances.json?${p1}`),
-        epivac.get(`trackedEntityInstances.json?${p2}`),
-      ]);
-
       let epivacData = {};
       let defenceData = {};
-      if (epivacByNIN.length > 0 && epivacByOther.length > 0) {
-      } else if (epivacByNIN.length > 0) {
-        epivacData = await this.processTrackedEntityInstances(epivacByNIN);
-      } else if (epivacByOther.length > 0) {
-        epivacData = await this.processTrackedEntityInstances(epivacByOther);
-      }
 
-      const [
-        {
-          data: { trackedEntityInstances: defenceByNIN },
-        },
-        {
-          data: { trackedEntityInstances: defenceByOther },
-        },
-      ] = await Promise.all([
-        defence.get(`trackedEntityInstances.json?${p1}`),
-        defence.get(`trackedEntityInstances.json?${p2}`),
-      ]);
+      try {
+        const [
+          {
+            data: { trackedEntityInstances: epivacByNIN },
+          },
+          {
+            data: { trackedEntityInstances: epivacByOther },
+          },
+        ] = await Promise.all([
+          epivac.get(`trackedEntityInstances.json?${p1}`),
+          epivac.get(`trackedEntityInstances.json?${p2}`),
+        ]);
 
-      if (defenceByNIN.length > 0 && defenceByOther.length > 0) {
-      } else if (defenceByNIN.length > 0) {
-        defenceData = await this.processTrackedEntityInstances(defenceByNIN);
-      } else if (defenceByOther.length > 0) {
-        defenceData = await this.processTrackedEntityInstances(defenceByOther);
-      }
+        if (epivacByNIN.length > 0 && epivacByOther.length > 0) {
+        } else if (epivacByNIN.length > 0) {
+          epivacData = await this.processTrackedEntityInstances(epivacByNIN);
+        } else if (epivacByOther.length > 0) {
+          epivacData = await this.processTrackedEntityInstances(epivacByOther);
+        }
+      } catch (error) {}
+
+      try {
+        const [
+          {
+            data: { trackedEntityInstances: defenceByNIN },
+          },
+          {
+            data: { trackedEntityInstances: defenceByOther },
+          },
+        ] = await Promise.all([
+          defence.get(`trackedEntityInstances.json?${p1}`),
+          defence.get(`trackedEntityInstances.json?${p2}`),
+        ]);
+
+        if (defenceByNIN.length > 0 && defenceByOther.length > 0) {
+        } else if (defenceByNIN.length > 0) {
+          defenceData = await this.processTrackedEntityInstances(defenceByNIN);
+        } else if (defenceByOther.length > 0) {
+          defenceData = await this.processTrackedEntityInstances(
+            defenceByOther
+          );
+        }
+      } catch (error) {}
 
       return { ...defenceData, ...epivacData };
     },
