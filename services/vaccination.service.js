@@ -149,7 +149,6 @@ module.exports = {
           }
         }
         const currentData = { ...data, DOSE1, DOSE2, id: identifier };
-        console.log(currentData);
         await ctx.call("es.bulk", {
           index: "certificates",
           dataset: [currentData],
