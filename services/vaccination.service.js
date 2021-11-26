@@ -295,8 +295,8 @@ module.exports = {
       const p1 = params.map((x) => `${x.name}=${x.value}`).join("&");
       const p2 = params1.map((x) => `${x.name}=${x.value}`).join("&");
 
-      let epivacData = {};
-      let defenceData = {};
+      let others = [];
+      let nin = [];
 
       try {
         const [
@@ -313,9 +313,11 @@ module.exports = {
 
         if (epivacByNIN.length > 0 && epivacByOther.length > 0) {
         } else if (epivacByNIN.length > 0) {
-          epivacData = await this.processTrackedEntityInstances(epivacByNIN);
+          nin = [...nin, ...epivacByNIN];
+          // epivacData = await this.processTrackedEntityInstances(epivacByNIN);
         } else if (epivacByOther.length > 0) {
-          epivacData = await this.processTrackedEntityInstances(epivacByOther);
+          others = [...others, ...epivacByOther];
+          // epivacData = await this.processTrackedEntityInstances(epivacByOther);
         }
       } catch (error) {}
 
@@ -334,15 +336,23 @@ module.exports = {
 
         if (defenceByNIN.length > 0 && defenceByOther.length > 0) {
         } else if (defenceByNIN.length > 0) {
-          defenceData = await this.processTrackedEntityInstances(defenceByNIN);
+          nin = [...nin, ...defenceByNIN];
+          // defenceData = await this.processTrackedEntityInstances(defenceByNIN);
         } else if (defenceByOther.length > 0) {
-          defenceData = await this.processTrackedEntityInstances(
-            defenceByOther
-          );
+          others = [...others, ...defenceByOther];
+          // defenceData = await this.processTrackedEntityInstances(
+          //   defenceByOther
+          // );
         }
       } catch (error) {}
-
-      return { ...defenceData, ...epivacData };
+      
+      if (nin.length > 0) {
+        return await this.processTrackedEntityInstances(nin);
+      }
+      if (others.length > 0) {
+        return await this.processTrackedEntityInstances(others);
+      }
+      return {};
     },
 
     processFacilities(organisationUnits) {
