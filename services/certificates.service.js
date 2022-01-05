@@ -115,11 +115,14 @@ module.exports = {
               } days`,
             };
           }
-        } else if (!isEmpty(data) && data.DOSE2 && data.DOSE2.vk2nF6wZwY4) {
-          if (
-            differenceInDays(new Date(), parseISO(data.DOSE2.eventDate)) >= 14
-          ) {
-            const eventDate = data.DOSE2.lySxMCMSo8Z;
+        } else if (
+          !isEmpty(data) &&
+          data.DOSE2 &&
+          data.DOSE2.vk2nF6wZwY4 &&
+          data.DOSE2.lySxMCMSo8Z
+        ) {
+          const eventDate = data.DOSE2.lySxMCMSo8Z;
+          if (differenceInDays(new Date(), parseISO(eventDate)) >= 14) {
             const facilityDoseWasGiven =
               data.DOSE2.X7tI86pr1y0 || data.DOSE2.OW3erclrDW8;
             const event = {
@@ -165,24 +168,82 @@ module.exports = {
               } days`,
             };
           }
+        } else if (
+          !isEmpty(data) &&
+          data.DOSE1 &&
+          data.DOSE1.vk2nF6wZwY4 &&
+          data.DOSE1.lySxMCMSo8Z
+        ) {
+          const eventDate = data.DOSE1.lySxMCMSo8Z;
+          if (differenceInDays(new Date(), parseISO(eventDate)) >= 14) {
+            const facilityDoseWasGiven =
+              data.DOSE1.X7tI86pr1y0 || data.DOSE1.OW3erclrDW8;
+            const event = {
+              ...data.DOSE1,
+              bbnyNYD1wgS: data.DOSE1[ELSEWHERE_VACCINE] || "",
+              eventDate,
+              orgUnitName: `${facilityDoseWasGiven}`,
+              rpkH9ZPGJcX: data.DOSE1[ELSEWHERE_MAN] || "",
+              Yp1F4txx8tm: data.DOSE1[ELSEWHERE_BATCH] || "",
+              district:
+                data.DOSE1[ELSEWHERE_IN_COUNTRY_DISTRICT] ||
+                data.DOSE1[ELSEWHERE_OUT_COUNTRY],
+            };
+            data = { ...data, DOSE2: event, eligible: true, doses: 2 };
+            const qr = await QRCode.toDataURL(
+              `Name:${data[NAME_ATTRIBUTE]}\nIdentifier:${data.id}\nSex:${
+                data[SEX_ATTRIBUTE]
+              }\nDOB:${data[DOB_ATTRIBUTE] || " "}\nPHONE:${
+                data[PHONE_ATTRIBUTE]
+              }\n${data.DOSE1.bbnyNYD1wgS}:${new Intl.DateTimeFormat(
+                "fr"
+              ).format(Date.parse(data.DOSE1.eventDate))},${
+                data.DOSE1.orgUnitName
+              },${data.DOSE1.districtName || ""}\n${
+                data.DOSE2.bbnyNYD1wgS
+              }:${new Intl.DateTimeFormat("fr").format(
+                Date.parse(data.DOSE2.eventDate)
+              )},${data.DOSE2.orgUnitName},${
+                data.DOSE2.districtName || ""
+              }\n\nClick to verify\nhttps://epivac.health.go.ug/certificates/#/validate/${
+                data.trackedEntityInstance
+              }`,
+              { margin: 0 }
+            );
+            return { ...data, qr, doses: 2 };
+          } else {
+            return {
+              ...data,
+              eligible: false,
+              message: `Your certificate is not yet ready please try again after ${
+                14 -
+                differenceInDays(new Date(), parseISO(data.DOSE2.eventDate))
+              } days`,
+            };
+          }
         } else if (!isEmpty(data) && data.DOSE2 && !data.DOSE2.vk2nF6wZwY4) {
           return {
             ...data,
             eligible: false,
             message: `Your may have not been fully vaccinated, current records show you have only received second dose without first dose.`,
           };
-        }
-        if (isEmpty(data)) {
+        } else if (!isEmpty(data) && data.DOSE1 && !data.DOSE1.vk2nF6wZwY4) {
+          return {
+            ...data,
+            eligible: false,
+            message: `Your may have not been fully vaccinated, current records show you have only received first dose without second dose.`,
+          };
+        } else if (!isEmpty(data) && (data.DOSE1 || data.DOSE2)) {
           return {
             eligible: false,
-            message: "You have no registered vaccination information",
+            message:
+              "We could not be able to generate your certificate because of missing or invalid registration information",
           };
         }
+
         return {
-          ...data,
           eligible: false,
-          message:
-            "Your may have not been fully vaccinated, current records show you have only received one dose.",
+          message: "You have no registered vaccination information",
         };
       },
     },
