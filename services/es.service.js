@@ -146,6 +146,30 @@ module.exports = {
         if (hits.length > 0) {
           return hits[0]._source;
         }
+        return {
+          message: "Record not found or could not be validated",
+        };
+      },
+    },
+    searchByIdentifier: {
+      async handler(ctx) {
+        const { identifier, index } = ctx.params;
+        const {
+          body: {
+            hits: { hits },
+          },
+        } = await client.search({
+          index,
+          body: {
+            query: {
+              match: { Ewi7FUfcHAD: identifier },
+            },
+          },
+        });
+        if (hits.length > 0) {
+          return hits[0]._source;
+        }
+        return { message: "Record not found or could not be validated" };
       },
     },
     search: {

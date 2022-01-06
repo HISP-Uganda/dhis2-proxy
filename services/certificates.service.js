@@ -10,12 +10,30 @@ const NAME_ATTRIBUTE = "sB1IHYu2xQT";
 const SEX_ATTRIBUTE = "FZzQbW8AWVd";
 const DOB_ATTRIBUTE = "NI0QRzJvQ0k";
 const PHONE_ATTRIBUTE = "ciCR6BBvIT4";
-
+const DOSE_PLACE = "AmTw4pWCCaJ";
 const ELSEWHERE_IN_COUNTRY_DISTRICT = "ObwW38YrQHu";
+const ELSEWHERE_IN_COUNTRY_FACILITY = "ObwW38YrQHu";
+const ELSEWHERE_OUT_COUNTRY_FACILITY = "X7tI86pr1y0";
 const ELSEWHERE_OUT_COUNTRY = "ONsseOxElW9";
 const ELSEWHERE_VACCINE = "wwX1eEiYLGR";
 const ELSEWHERE_MAN = "taGJD9hkX0s";
 const ELSEWHERE_BATCH = "muCgXjnCfnS";
+
+const findDistrictAndFacility = (data, dose = "DOSE2") => {
+  const where = data[dose][DOSE_PLACE];
+
+  if (where === "Outside the country") {
+    return {
+      facility: data[dose][ELSEWHERE_OUT_COUNTRY_FACILITY],
+      district: data[dose][ELSEWHERE_OUT_COUNTRY],
+    };
+  }
+
+  return {
+    facility: data[dose][ELSEWHERE_IN_COUNTRY_FACILITY],
+    district: data[dose][ELSEWHERE_IN_COUNTRY_DISTRICT],
+  };
+};
 
 module.exports = {
   name: "certificates",
@@ -123,18 +141,18 @@ module.exports = {
         ) {
           const eventDate = data.DOSE2.lySxMCMSo8Z;
           if (differenceInDays(new Date(), parseISO(eventDate)) >= 14) {
-            const facilityDoseWasGiven =
-              data.DOSE2.X7tI86pr1y0 || data.DOSE2.OW3erclrDW8;
+            const { facility, district } = findDistrictAndFacility(
+              data,
+              "DOSE2"
+            );
             const event = {
               ...data.DOSE2,
               bbnyNYD1wgS: data.DOSE2[ELSEWHERE_VACCINE] || "",
               eventDate,
-              orgUnitName: `${facilityDoseWasGiven}`,
+              orgUnitName: facility,
               rpkH9ZPGJcX: data.DOSE2[ELSEWHERE_MAN] || "",
               Yp1F4txx8tm: data.DOSE2[ELSEWHERE_BATCH] || "",
-              district:
-                data.DOSE2[ELSEWHERE_IN_COUNTRY_DISTRICT] ||
-                data.DOSE2[ELSEWHERE_OUT_COUNTRY],
+              district,
             };
             data = { ...data, DOSE1: event, eligible: true, doses: 2 };
             const qr = await QRCode.toDataURL(
@@ -176,18 +194,18 @@ module.exports = {
         ) {
           const eventDate = data.DOSE1.lySxMCMSo8Z;
           if (differenceInDays(new Date(), parseISO(eventDate)) >= 14) {
-            const facilityDoseWasGiven =
-              data.DOSE1.X7tI86pr1y0 || data.DOSE1.OW3erclrDW8;
+            const { facility, district } = findDistrictAndFacility(
+              data,
+              "DOSE2"
+            );
             const event = {
               ...data.DOSE1,
               bbnyNYD1wgS: data.DOSE1[ELSEWHERE_VACCINE] || "",
               eventDate,
-              orgUnitName: `${facilityDoseWasGiven}`,
+              orgUnitName: facility,
               rpkH9ZPGJcX: data.DOSE1[ELSEWHERE_MAN] || "",
               Yp1F4txx8tm: data.DOSE1[ELSEWHERE_BATCH] || "",
-              district:
-                data.DOSE1[ELSEWHERE_IN_COUNTRY_DISTRICT] ||
-                data.DOSE1[ELSEWHERE_OUT_COUNTRY],
+              district,
             };
             data = { ...data, DOSE2: event, eligible: true, doses: 2 };
             const qr = await QRCode.toDataURL(
@@ -293,6 +311,15 @@ module.exports = {
       },
       async handler(ctx) {
         return await ctx.call("es.searchTrackedEntityInstance", ctx.params);
+      },
+    },
+    search: {
+      rest: {
+        method: "GET",
+        path: "/confirm/:identifier",
+      },
+      async handler(ctx) {
+        return await ctx.call("es.searchByIdentifier", ctx.params);
       },
     },
     facilities: {
