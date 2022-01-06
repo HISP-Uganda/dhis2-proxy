@@ -196,7 +196,7 @@ module.exports = {
           if (differenceInDays(new Date(), parseISO(eventDate)) >= 14) {
             const { facility, district } = findDistrictAndFacility(
               data,
-              "DOSE2"
+              "DOSE1"
             );
             const event = {
               ...data.DOSE1,

@@ -139,7 +139,12 @@ module.exports = {
           index,
           body: {
             query: {
-              match: { trackedEntityInstance },
+              bool: {
+                should: [
+                  { match: { trackedEntityInstance } },
+                  { match: { id: trackedEntityInstance } },
+                ],
+              },
             },
           },
         });
