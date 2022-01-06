@@ -152,7 +152,7 @@ module.exports = {
               orgUnitName: facility,
               rpkH9ZPGJcX: data.DOSE2[ELSEWHERE_MAN] || "",
               Yp1F4txx8tm: data.DOSE2[ELSEWHERE_BATCH] || "",
-              district,
+              districtName: district,
             };
             data = { ...data, DOSE1: event, eligible: true, doses: 2 };
             const qr = await QRCode.toDataURL(
@@ -205,7 +205,7 @@ module.exports = {
               orgUnitName: facility,
               rpkH9ZPGJcX: data.DOSE1[ELSEWHERE_MAN] || "",
               Yp1F4txx8tm: data.DOSE1[ELSEWHERE_BATCH] || "",
-              district,
+              districtName: district,
             };
             data = { ...data, DOSE2: event, eligible: true, doses: 2 };
             const qr = await QRCode.toDataURL(
