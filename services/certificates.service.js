@@ -18,6 +18,7 @@ const ELSEWHERE_OUT_COUNTRY = "ONsseOxElW9";
 const ELSEWHERE_VACCINE = "wwX1eEiYLGR";
 const ELSEWHERE_MAN = "taGJD9hkX0s";
 const ELSEWHERE_BATCH = "muCgXjnCfnS";
+const VACCINATION_MIN_DAYS = 1;
 
 const findDistrictAndFacility = (data, dose = "DOSE2") => {
   const where = data[dose][DOSE_PLACE];
@@ -69,7 +70,8 @@ module.exports = {
           data.DOSE1.bbnyNYD1wgS === "Johnson and Johnson"
         ) {
           if (
-            differenceInDays(new Date(), parseISO(data.DOSE1.eventDate)) >= 14
+            differenceInDays(new Date(), parseISO(data.DOSE1.eventDate)) >=
+            VACCINATION_MIN_DAYS
           ) {
             const qr = await QRCode.toDataURL(
               `Name:${data[NAME_ATTRIBUTE]}\nIdentifier:${data.id}\nSex:${
@@ -93,14 +95,15 @@ module.exports = {
               ...data,
               eligible: false,
               message: `Your certificate is not yet ready please try again after ${
-                14 -
+                VACCINATION_MIN_DAYS -
                 differenceInDays(new Date(), parseISO(data.DOSE1.eventDate))
               } days`,
             };
           }
         } else if (!isEmpty(data) && data.DOSE1 && data.DOSE2) {
           if (
-            differenceInDays(new Date(), parseISO(data.DOSE2.eventDate)) >= 14
+            differenceInDays(new Date(), parseISO(data.DOSE2.eventDate)) >=
+            VACCINATION_MIN_DAYS
           ) {
             const qr = await QRCode.toDataURL(
               `Name:${data[NAME_ATTRIBUTE]}\nIdentifier:${data.id}\nSex:${
@@ -128,7 +131,7 @@ module.exports = {
               ...data,
               eligible: false,
               message: `Your certificate is not yet ready please try again after ${
-                14 -
+                VACCINATION_MIN_DAYS -
                 differenceInDays(new Date(), parseISO(data.DOSE2.eventDate))
               } days`,
             };
@@ -140,7 +143,10 @@ module.exports = {
           data.DOSE2.lySxMCMSo8Z
         ) {
           const eventDate = data.DOSE2.lySxMCMSo8Z;
-          if (differenceInDays(new Date(), parseISO(eventDate)) >= 14) {
+          if (
+            differenceInDays(new Date(), parseISO(eventDate)) >=
+            VACCINATION_MIN_DAYS
+          ) {
             const { facility, district } = findDistrictAndFacility(
               data,
               "DOSE2"
@@ -181,7 +187,7 @@ module.exports = {
               ...data,
               eligible: false,
               message: `Your certificate is not yet ready please try again after ${
-                14 -
+                VACCINATION_MIN_DAYS -
                 differenceInDays(new Date(), parseISO(data.DOSE2.eventDate))
               } days`,
             };
@@ -193,7 +199,10 @@ module.exports = {
           data.DOSE1.lySxMCMSo8Z
         ) {
           const eventDate = data.DOSE1.lySxMCMSo8Z;
-          if (differenceInDays(new Date(), parseISO(eventDate)) >= 14) {
+          if (
+            differenceInDays(new Date(), parseISO(eventDate)) >=
+            VACCINATION_MIN_DAYS
+          ) {
             const { facility, district } = findDistrictAndFacility(
               data,
               "DOSE1"
@@ -234,7 +243,7 @@ module.exports = {
               ...data,
               eligible: false,
               message: `Your certificate is not yet ready please try again after ${
-                14 -
+                VACCINATION_MIN_DAYS -
                 differenceInDays(new Date(), parseISO(data.DOSE2.eventDate))
               } days`,
             };
