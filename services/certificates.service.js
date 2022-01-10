@@ -18,7 +18,7 @@ const ELSEWHERE_OUT_COUNTRY = "ONsseOxElW9";
 const ELSEWHERE_VACCINE = "wwX1eEiYLGR";
 const ELSEWHERE_MAN = "taGJD9hkX0s";
 const ELSEWHERE_BATCH = "muCgXjnCfnS";
-const VACCINATION_MIN_DAYS = 0;
+const VACCINATION_MIN_DAYS = 14;
 
 const findDistrictAndFacility = (data, dose = "DOSE2") => {
   const where = data[dose][DOSE_PLACE];
