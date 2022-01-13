@@ -62,7 +62,6 @@ module.exports = {
           },
         });
 
-        console.log(previous);
         let doseUnits = [];
         let data = await this.fetchCertificate(identifier, phone);
 
