@@ -62,6 +62,7 @@ module.exports = {
           },
         });
 
+        console.log(previous);
         let doseUnits = [];
         let data = await this.fetchCertificate(identifier, phone);
 
@@ -310,8 +311,6 @@ module.exports = {
           epivac.get(`trackedEntityInstances.json?${p1}`),
           epivac.get(`trackedEntityInstances.json?${p2}`),
         ]);
-
-        console.log(epivacByNIN, epivacByOther);
 
         if (epivacByNIN.length > 0 && epivacByOther.length > 0) {
         } else if (epivacByNIN.length > 0) {
