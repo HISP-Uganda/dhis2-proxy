@@ -311,6 +311,8 @@ module.exports = {
           epivac.get(`trackedEntityInstances.json?${p2}`),
         ]);
 
+        console.log(epivacByNIN, epivacByOther);
+
         if (epivacByNIN.length > 0 && epivacByOther.length > 0) {
         } else if (epivacByNIN.length > 0) {
           nin = [...nin, ...epivacByNIN];
@@ -345,7 +347,7 @@ module.exports = {
           // );
         }
       } catch (error) {}
-      
+
       if (nin.length > 0) {
         return await this.processTrackedEntityInstances(nin);
       }
