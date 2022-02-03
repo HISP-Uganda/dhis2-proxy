@@ -75,6 +75,13 @@ module.exports = {
                   Math.random() * (99999999 - 10000000 + 1) + 10000000
                 ),
           };
+        } else {
+          data = {
+            ...data,
+            certificate: Math.floor(
+              Math.random() * (99999999 - 10000000 + 1) + 10000000
+            ),
+          };
         }
 
         if (data.DOSE1) {
