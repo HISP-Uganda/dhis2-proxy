@@ -123,6 +123,8 @@ module.exports = {
 
         let DOSE1 = data.DOSE1;
         let DOSE2 = data.DOSE2;
+        let BOOSTER1 = data.BOOSTER1;
+        let BOOSTER2 = data.BOOSTER2;
 
         if (DOSE1) {
           const facility = foundFacilities[DOSE1.orgUnit] || {};
@@ -155,7 +157,47 @@ module.exports = {
             };
           }
         }
-        const currentData = { ...data, DOSE1, DOSE2, id: identifier };
+
+        if (BOOSTER1) {
+          const facility = foundFacilities[BOOSTER1.orgUnit] || {};
+          BOOSTER1 = {
+            ...BOOSTER1,
+            ...facility,
+          };
+          const siteChange = defenceUnits[BOOSTER1.orgUnit];
+          if (siteChange) {
+            BOOSTER1 = {
+              ...BOOSTER1,
+              name: siteChange,
+              orgUnitName: siteChange,
+            };
+          }
+        }
+
+        if (BOOSTER2) {
+          const facility = foundFacilities[BOOSTER2.orgUnit] || {};
+          BOOSTER2 = {
+            ...BOOSTER2,
+            ...facility,
+          };
+          const siteChange = defenceUnits[BOOSTER2.orgUnit];
+          if (siteChange) {
+            BOOSTER2 = {
+              ...BOOSTER2,
+              name: siteChange,
+              orgUnitName: siteChange,
+            };
+          }
+        }
+
+        const currentData = {
+          ...data,
+          DOSE1,
+          DOSE2,
+          BOOSTER2,
+          BOOSTER1,
+          id: identifier,
+        };
         await ctx.call("es.bulk", {
           index: "certificates",
           dataset: [currentData],
