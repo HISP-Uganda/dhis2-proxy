@@ -5,7 +5,7 @@
  */
 
 const axios = require("axios");
-const { fromPairs, groupBy, uniq } = require("lodash");
+const { fromPairs, groupBy, uniq, orderBy } = require("lodash");
 const mergeByKey = require("array-merge-by-key");
 const defenceSites = require("./defenceSites.json");
 
@@ -241,6 +241,15 @@ module.exports = {
         allEvents.filter(({ deleted }) => !deleted),
         "LUIsbsm3okG"
       );
+
+      const boosters = doses["BOOSTER"];
+      let foundBoosters = {};
+      if (boosters) {
+        const sortedByEventDate = orderBy(boosters, ["eventDate"], ["desc"])
+          .slice(0, 2)
+          .map((d, i) => [`BOOSTER${i + 1}`, d]);
+        foundBoosters = fromPairs(sortedByEventDate);
+      }
       const pp = Object.entries(doses).map(([dose, allDoses]) => {
         const gotDoses = mergeByKey("LUIsbsm3okG", allDoses);
         return [dose, gotDoses.length > 0 ? gotDoses[0] : {}];
@@ -249,6 +258,7 @@ module.exports = {
       return {
         ...fromPairs(attributes.map((a) => [a.attribute, a.value])),
         ...fromPairs(pp),
+        ...foundBoosters,
         trackedEntityInstance,
       };
     },
