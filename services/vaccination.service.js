@@ -289,6 +289,7 @@ module.exports = {
       if (boosters) {
         const sortedByEventDate = orderBy(boosters, ["eventDate"], ["desc"])
           .slice(0, 2)
+          .reverse()
           .map((d, i) => [`BOOSTER${i + 1}`, d]);
         foundBoosters = fromPairs(sortedByEventDate);
       }
