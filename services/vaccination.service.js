@@ -92,6 +92,16 @@ module.exports = {
           doseUnits.push(data.DOSE2.orgUnit);
         }
 
+        if (data.BOOSTER1) {
+          doseUnits.push(data.BOOSTER1.orgUnit);
+        }
+
+        if (data.BOOSTER2) {
+          doseUnits.push(data.BOOSTER2.orgUnit);
+        }
+
+
+
         const allFacilities = uniq(doseUnits);
 
         const facilities = await Promise.all(
