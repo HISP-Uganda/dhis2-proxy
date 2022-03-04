@@ -62,45 +62,14 @@ module.exports = {
       },
       async handler(ctx) {
         let data = await ctx.call("vaccination.certificate", ctx.params);
+        const qr = await this.generate(data);
         if (
           !isEmpty(data) &&
           data.DOSE1 &&
           data.DOSE1.bbnyNYD1wgS === "Johnson and Johnson"
         ) {
-          const qr = await QRCode.toDataURL(
-            `Name:${data[NAME_ATTRIBUTE]}\nIdentifier:${data.id}\nSex:${
-              data[SEX_ATTRIBUTE]
-            }\nDOB:${data[DOB_ATTRIBUTE] || " "}\nPHONE:${
-              data[PHONE_ATTRIBUTE]
-            }\n${data.DOSE1.bbnyNYD1wgS}:${new Intl.DateTimeFormat("fr").format(
-              Date.parse(data.DOSE1.eventDate)
-            )},${data.DOSE1.orgUnitName},${
-              data.DOSE1.districtName || ""
-            }\n\nClick to verify\nhttps://epivac.health.go.ug/certificates/#/validate/${
-              data.trackedEntityInstance
-            }`,
-            { margin: 0 }
-          );
           return { ...data, qr, eligible: true, type: "Fully", doses: 1 };
         } else if (!isEmpty(data) && data.DOSE1 && data.DOSE2) {
-          const qr = await QRCode.toDataURL(
-            `Name:${data[NAME_ATTRIBUTE]}\nIdentifier:${data.id}\nSex:${
-              data[SEX_ATTRIBUTE]
-            }\nDOB:${data[DOB_ATTRIBUTE] || " "}\nPHONE:${
-              data[PHONE_ATTRIBUTE]
-            }\n${data.DOSE1.bbnyNYD1wgS}:${new Intl.DateTimeFormat("fr").format(
-              Date.parse(data.DOSE1.eventDate)
-            )},${data.DOSE1.orgUnitName},${data.DOSE1.districtName || ""}\n${
-              data.DOSE2.bbnyNYD1wgS
-            }:${new Intl.DateTimeFormat("fr").format(
-              Date.parse(data.DOSE2.eventDate)
-            )},${data.DOSE2.orgUnitName},${
-              data.DOSE2.districtName || ""
-            }\n\nClick to verify\nhttps://epivac.health.go.ug/certificates/#/validate/${
-              data.trackedEntityInstance
-            }`,
-            { margin: 0 }
-          );
           return { ...data, type: "Fully", qr, eligible: true, doses: 2 };
         } else if (
           !isEmpty(data) &&
@@ -121,24 +90,6 @@ module.exports = {
             districtName: district,
           };
           data = { ...data, DOSE1: event, eligible: true, doses: 2 };
-          const qr = await QRCode.toDataURL(
-            `Name:${data[NAME_ATTRIBUTE]}\nIdentifier:${data.id}\nSex:${
-              data[SEX_ATTRIBUTE]
-            }\nDOB:${data[DOB_ATTRIBUTE] || " "}\nPHONE:${
-              data[PHONE_ATTRIBUTE]
-            }\n${data.DOSE1.bbnyNYD1wgS}:${new Intl.DateTimeFormat("fr").format(
-              Date.parse(data.DOSE1.eventDate)
-            )},${data.DOSE1.orgUnitName},${data.DOSE1.districtName || ""}\n${
-              data.DOSE2.bbnyNYD1wgS
-            }:${new Intl.DateTimeFormat("fr").format(
-              Date.parse(data.DOSE2.eventDate)
-            )},${data.DOSE2.orgUnitName},${
-              data.DOSE2.districtName || ""
-            }\n\nClick to verify\nhttps://epivac.health.go.ug/certificates/#/validate/${
-              data.trackedEntityInstance
-            }`,
-            { margin: 0 }
-          );
           return { ...data, type: "Fully", qr, doses: 2 };
         } else if (
           !isEmpty(data) &&
@@ -158,40 +109,8 @@ module.exports = {
             districtName: district,
           };
           data = { ...data, DOSE2: event, eligible: true, doses: 2 };
-          const qr = await QRCode.toDataURL(
-            `Name:${data[NAME_ATTRIBUTE]}\nIdentifier:${data.id}\nSex:${
-              data[SEX_ATTRIBUTE]
-            }\nDOB:${data[DOB_ATTRIBUTE] || " "}\nPHONE:${
-              data[PHONE_ATTRIBUTE]
-            }\n${data.DOSE1.bbnyNYD1wgS}:${new Intl.DateTimeFormat("fr").format(
-              Date.parse(data.DOSE1.eventDate)
-            )},${data.DOSE1.orgUnitName},${data.DOSE1.districtName || ""}\n${
-              data.DOSE2.bbnyNYD1wgS
-            }:${new Intl.DateTimeFormat("fr").format(
-              Date.parse(data.DOSE2.eventDate)
-            )},${data.DOSE2.orgUnitName},${
-              data.DOSE2.districtName || ""
-            }\n\nClick to verify\nhttps://epivac.health.go.ug/certificates/#/validate/${
-              data.trackedEntityInstance
-            }`,
-            { margin: 0 }
-          );
           return { ...data, qr, type: "Fully", doses: 2 };
         } else if (!isEmpty(data) && data.DOSE2) {
-          const qr = await QRCode.toDataURL(
-            `Name:${data[NAME_ATTRIBUTE]}\nIdentifier:${data.id}\nSex:${
-              data[SEX_ATTRIBUTE]
-            }\nDOB:${data[DOB_ATTRIBUTE] || " "}\nPHONE:${
-              data[PHONE_ATTRIBUTE]
-            }\n${data.DOSE2.bbnyNYD1wgS}:${new Intl.DateTimeFormat("fr").format(
-              Date.parse(data.DOSE2.eventDate)
-            )},${data.DOSE2.orgUnitName},${
-              data.DOSE2.districtName || ""
-            }\n\nClick to verify\nhttps://epivac.health.go.ug/certificates/#/validate/${
-              data.trackedEntityInstance
-            }`,
-            { margin: 0 }
-          );
           return {
             ...data,
             eligible: true,
@@ -199,20 +118,6 @@ module.exports = {
             qr,
           };
         } else if (!isEmpty(data) && data.DOSE1 && !data.DOSE1.vk2nF6wZwY4) {
-          const qr = await QRCode.toDataURL(
-            `Name:${data[NAME_ATTRIBUTE]}\nIdentifier:${data.id}\nSex:${
-              data[SEX_ATTRIBUTE]
-            }\nDOB:${data[DOB_ATTRIBUTE] || " "}\nPHONE:${
-              data[PHONE_ATTRIBUTE]
-            }\n${data.DOSE1.bbnyNYD1wgS}:${new Intl.DateTimeFormat("fr").format(
-              Date.parse(data.DOSE1.eventDate)
-            )},${data.DOSE1.orgUnitName},${
-              data.DOSE1.districtName || ""
-            }\n\nClick to verify\nhttps://epivac.health.go.ug/certificates/#/validate/${
-              data.trackedEntityInstance
-            }`,
-            { margin: 0 }
-          );
           return {
             ...data,
             type: "Partially",
@@ -308,7 +213,57 @@ module.exports = {
   /**
    * Methods
    */
-  methods: {},
+  methods: {
+    generate: async (data) => {
+      const names = `Name:${data[NAME_ATTRIBUTE]}\nIdentifier:${data.id}\nSex:${
+        data[SEX_ATTRIBUTE]
+      }\nDOB:${data[DOB_ATTRIBUTE] || " "}\nPHONE:${data[PHONE_ATTRIBUTE]}\n`;
+
+      let dose1 = "";
+      let dose2 = "";
+      let booster1 = "";
+
+      let booster2 = "";
+
+      if (data.DOSE1) {
+        dose1 = `${data.DOSE1.bbnyNYD1wgS}:${new Intl.DateTimeFormat(
+          "fr"
+        ).format(Date.parse(data.DOSE1.eventDate))},${data.DOSE1.orgUnitName},${
+          data.DOSE1.districtName || ""
+        }\n`;
+      }
+
+      if (data.DOSE2) {
+        dose2 = `${data.DOSE2.bbnyNYD1wgS}:${new Intl.DateTimeFormat(
+          "fr"
+        ).format(Date.parse(data.DOSE2.eventDate))},${data.DOSE2.orgUnitName},${
+          data.DOSE2.districtName || ""
+        }\n`;
+      }
+
+      if (data.BOOSTER1) {
+        booster1 = `${data.BOOSTER1.bbnyNYD1wgS}:${new Intl.DateTimeFormat(
+          "fr"
+        ).format(Date.parse(data.BOOSTER1.eventDate))},${
+          data.BOOSTER1.orgUnitName
+        },${data.BOOSTER1.districtName || ""}\n`;
+      }
+
+      if (data.BOOSTER2) {
+        booster2 = `${data.BOOSTER2.bbnyNYD1wgS}:${new Intl.DateTimeFormat(
+          "fr"
+        ).format(Date.parse(data.BOOSTER2.eventDate))},${
+          data.BOOSTER2.orgUnitName
+        },${data.BOOSTER2.districtName || ""}\n`;
+      }
+
+      const qr = await QRCode.toDataURL(
+        `${names}${dose1}${dose2}${booster1}${booster2}\nClick to verify\nhttps://epivac.health.go.ug/certificates/#/validate/${data.trackedEntityInstance}`,
+        { margin: 0 }
+      );
+      return qr;
+    },
+  },
 
   /**
    * Service created lifecycle event handler
