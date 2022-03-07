@@ -6,7 +6,7 @@ const { MoleculerError } = require("moleculer").Errors;
  */
 
 const primaryKeys = {
-  organisationunits: "organisationid",
+  organisationunit: "organisationid",
   programinstance: "programinstanceid",
   programstageinstance: "programstageinstanceid",
   foo: "a",
