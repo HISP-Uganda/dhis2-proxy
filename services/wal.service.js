@@ -48,17 +48,18 @@ module.exports = {
       },
       async handler(ctx) {
         const { index, data } = ctx.params;
-        if (primaryKeys[index]) {
-          return await ctx.call("es.bulk", {
-            index,
-            dataset: data,
-            id: primaryKeys[index],
-          });
+        try {
+          if (primaryKeys[index]) {
+            return await ctx.call("es.bulk", {
+              index,
+              dataset: data,
+              id: primaryKeys[index],
+            });
+          }
+        } catch (error) {
+          console.log(error);
+          return error;
         }
-        throw new MoleculerError("Something happened", 501, "ERR_SOMETHING", {
-          a: 5,
-          nodeID: "node-666",
-        });
       },
     },
   },
