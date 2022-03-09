@@ -47,11 +47,11 @@ module.exports = {
         path: "/index",
       },
       async handler(ctx) {
-        const { index, ...data } = ctx.params;
+        const { index, data } = ctx.params;
         if (primaryKeys[index]) {
           return await ctx.call("es.bulk", {
             index,
-            dataset: [data],
+            dataset: data,
             id: primaryKeys[index],
           });
         }
