@@ -194,7 +194,22 @@ module.exports = {
           index: ctx.params.index,
           body: ctx.params.body,
         });
-        return { hits, aggregations };
+        return hits;
+      },
+    },
+    aggregations: {
+      params: {
+        index: "string",
+        body: "object",
+      },
+      async handler(ctx) {
+        const {
+          body: { aggregations },
+        } = await client.search({
+          index: ctx.params.index,
+          body: ctx.params.body,
+        });
+        return aggregations;
       },
     },
     get: {

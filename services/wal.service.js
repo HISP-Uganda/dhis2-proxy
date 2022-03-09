@@ -35,7 +35,7 @@ module.exports = {
       },
       async handler(ctx) {
         const { index, ...body } = ctx.params;
-        return await ctx.call("es.search", {
+        return await ctx.call("es.aggregations", {
           index,
           body,
         });
