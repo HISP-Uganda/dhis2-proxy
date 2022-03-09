@@ -187,13 +187,14 @@ module.exports = {
       async handler(ctx) {
         const {
           body: {
+            aggregations,
             hits: { hits },
           },
         } = await client.search({
           index: ctx.params.index,
           body: ctx.params.body,
         });
-        return hits;
+        return { hits, aggregations };
       },
     },
     get: {
