@@ -31,6 +31,19 @@ module.exports = {
     post: {
       rest: {
         method: "POST",
+        path: "/search",
+      },
+      async handler(ctx) {
+        const { index, ...body } = ctx.params;
+        return await ctx.call("es.search", {
+          index,
+          body,
+        });
+      },
+    },
+    searches: {
+      rest: {
+        method: "POST",
         path: "/",
       },
       async handler(ctx) {
