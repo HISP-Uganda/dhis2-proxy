@@ -30,11 +30,15 @@ module.exports = {
   actions: {
     post: {
       rest: {
-        method: "GET",
+        method: "POST",
         path: "/",
       },
       async handler(ctx) {
-        return {};
+        const { index, ...body } = ctx.params;
+        return await ctx.call("es.search", {
+          index,
+          body,
+        });
       },
     },
     index: {
