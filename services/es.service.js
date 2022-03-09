@@ -1,5 +1,6 @@
 "use strict";
 const { Client } = require("@elastic/elasticsearch");
+const {flatMap} = require("lodash");
 
 const client = new Client({ node: "http://localhost:9200" });
 // const client = new Client({ node: "http://192.168.64.3:9200" });
@@ -45,7 +46,7 @@ module.exports = {
     bulk: {
       async handler(ctx) {
         const { index, dataset, id } = ctx.params;
-        const body = dataset.flatMap((doc) => [
+        const body = flatMap(dataset, (doc) => [
           { index: { _index: index, _id: doc[id] } },
           doc,
         ]);
