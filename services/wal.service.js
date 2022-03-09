@@ -28,7 +28,7 @@ module.exports = {
    * Actions
    */
   actions: {
-    post: {
+    search: {
       rest: {
         method: "POST",
         path: "/search",
@@ -41,7 +41,7 @@ module.exports = {
         });
       },
     },
-    searches: {
+    aggregate: {
       rest: {
         method: "POST",
         path: "/",
