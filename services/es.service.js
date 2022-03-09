@@ -50,7 +50,8 @@ module.exports = {
           { index: { _index: index, _id: doc[id] } },
           doc,
         ]);
-        return body;
+        console.log(body);
+        return {};
         // const { body: bulkResponse } = await client.bulk({
         //   refresh: true,
         //   body,
