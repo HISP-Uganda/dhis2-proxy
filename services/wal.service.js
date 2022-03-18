@@ -41,6 +41,16 @@ module.exports = {
         });
       },
     },
+    receive: {
+      rest: {
+        method: "POST",
+        path: "/receive",
+      },
+      async handler(ctx) {
+        console.log(ctx.params);
+        return ctx.params;
+      },
+    },
     aggregate: {
       rest: {
         method: "POST",
