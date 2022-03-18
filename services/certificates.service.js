@@ -75,7 +75,6 @@ module.exports = {
           const event = {
             ...data.BOOSTER1,
             bbnyNYD1wgS: data.BOOSTER1[ELSEWHERE_VACCINE] || "",
-            eventDate,
             orgUnitName: facility,
             rpkH9ZPGJcX: data.BOOSTER1[ELSEWHERE_MAN] || "",
             Yp1F4txx8tm: data.BOOSTER1[ELSEWHERE_BATCH] || "",
@@ -95,7 +94,6 @@ module.exports = {
           const event = {
             ...data.BOOSTER2,
             bbnyNYD1wgS: data.BOOSTER2[ELSEWHERE_VACCINE] || "",
-            eventDate,
             orgUnitName: facility,
             rpkH9ZPGJcX: data.BOOSTER2[ELSEWHERE_MAN] || "",
             Yp1F4txx8tm: data.BOOSTER2[ELSEWHERE_BATCH] || "",
