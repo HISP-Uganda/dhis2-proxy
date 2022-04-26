@@ -10,6 +10,7 @@ const primaryKeys = {
   programinstance: "programinstanceid",
   programstageinstance: "programstageinstanceid",
   foo: "a",
+  datavalues: "id",
 };
 
 module.exports = {

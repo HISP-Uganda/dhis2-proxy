@@ -187,7 +187,6 @@ module.exports = {
       async handler(ctx) {
         const {
           body: {
-            aggregations,
             hits: { hits },
           },
         } = await client.search({
