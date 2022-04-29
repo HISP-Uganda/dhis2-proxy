@@ -11,7 +11,7 @@ const primaryKeys = {
   programstageinstance: "programstageinstanceid",
   foo: "a",
   datavalues: "id",
-  epivac
+  epivac: "id",
 };
 
 module.exports = {
