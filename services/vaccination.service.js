@@ -100,8 +100,6 @@ module.exports = {
           doseUnits.push(data.BOOSTER2.orgUnit);
         }
 
-
-
         const allFacilities = uniq(doseUnits);
 
         const facilities = await Promise.all(
@@ -121,7 +119,8 @@ module.exports = {
 
         let foundFacilities = fromPairs(
           facilities
-            .map(([data]) => {
+            .map((response) => {
+              const [data] = response?.hits?.hits;
               if (data && data._source) {
                 const {
                   _source: { id, ...rest },
