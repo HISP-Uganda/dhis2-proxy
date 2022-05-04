@@ -199,7 +199,10 @@ module.exports = {
       },
       async handler(ctx) {
         console.log(ctx.params.body);
-        const scrollSearch = client.helpers.scrollSearch(ctx.params.body);
+        const scrollSearch = client.helpers.scrollSearch({
+          index: ctx.params.index,
+          body: ctx.params.body,
+        });
 
         let documents = [];
 
