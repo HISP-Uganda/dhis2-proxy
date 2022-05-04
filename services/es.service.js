@@ -198,10 +198,8 @@ module.exports = {
         body: "object",
       },
       async handler(ctx) {
-        const scrollSearch = client.helpers.scrollSearch({
-          index: ctx.params.index,
-          query: ctx.params.body,
-        });
+        console.log(ctx.params.body);
+        const scrollSearch = client.helpers.scrollSearch(ctx.params.body);
 
         let documents = [];
 
