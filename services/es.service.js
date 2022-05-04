@@ -192,6 +192,29 @@ module.exports = {
         return body;
       },
     },
+    scroll: {
+      params: {
+        index: "string",
+        body: "object",
+      },
+      async handler(ctx) {
+        const scrollSearch = client.helpers.scrollSearch({
+          index: ctx.params.index,
+          query: ctx.params.body,
+        });
+
+        let documents = [];
+
+        for await (const result of scrollSearch) {
+          documents = [...documents, ...result.documents];
+        }
+        // const { body } = await client.search({
+        //   index: ctx.params.index,
+        //   body: ctx.params.body,
+        // });
+        return documents;
+      },
+    },
     aggregations: {
       params: {
         index: "string",
