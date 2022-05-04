@@ -49,7 +49,11 @@ module.exports = {
         path: "/scroll",
       },
       async handler(ctx) {
-        return await ctx.call("es.scroll", ctx.params);
+        const { index, ...body } = ctx.params;
+        return await ctx.call("es.scroll", {
+          index,
+          body,
+        });
       },
     },
     receive: {

@@ -203,9 +203,7 @@ module.exports = {
         //   index: ctx.params.index,
         //   body: ctx.params.body,
         // });
-
         let documents = [];
-
         // for await (const result of scrollSearch) {
         //   documents = [...documents, ...result.documents];
         // }
