@@ -117,6 +117,8 @@ module.exports = {
           })
         );
 
+        console.log(facilities);
+
         let foundFacilities = fromPairs(
           facilities
             .map(([data]) => {
