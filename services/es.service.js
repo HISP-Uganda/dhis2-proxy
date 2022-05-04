@@ -198,7 +198,7 @@ module.exports = {
         body: "object",
       },
       async handler(ctx) {
-        console.log(ctx.params.body);
+        console.log(ctx.params);
         // const scrollSearch = client.helpers.scrollSearch({
         //   index: ctx.params.index,
         //   body: ctx.params.body,
