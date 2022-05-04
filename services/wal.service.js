@@ -43,6 +43,19 @@ module.exports = {
         });
       },
     },
+    scroll: {
+      rest: {
+        method: "POST",
+        path: "/scroll",
+      },
+      async handler(ctx) {
+        const { index, ...body } = ctx.params;
+        return await ctx.call("es.scroll", {
+          index,
+          body,
+        });
+      },
+    },
     receive: {
       rest: {
         method: "POST",
