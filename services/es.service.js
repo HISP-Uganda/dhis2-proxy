@@ -207,10 +207,6 @@ module.exports = {
         for await (const result of scrollSearch) {
           documents = [...documents, ...result.documents];
         }
-        // const { body } = await client.search({
-        //   index: ctx.params.index,
-        //   body: ctx.params.body,
-        // });
         return documents;
       },
     },
