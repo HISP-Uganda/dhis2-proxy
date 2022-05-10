@@ -10,7 +10,7 @@ const mergeByKey = require("array-merge-by-key");
 const defenceSites = require("./defenceSites.json");
 
 const epivac = axios.create({
-  baseURL: "https://epivac.health.go.ug/data/api/",
+  baseURL: "https://epivac.health.go.ug/api/",
   auth: {
     username: process.env.EPIVAC_USERNAME,
     password: process.env.EPIVAC_PASSWORD,
