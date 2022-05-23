@@ -79,12 +79,12 @@ module.exports = {
           index: "epivac",
           body: {
             query: {
-              bool: must,
+              bool: { must },
             },
           },
         });
 
-        console.log(must);
+        console.log(previous);
 
         // let doseUnits = [];
         // let data = await this.fetchCertificate(identifier, phone);
