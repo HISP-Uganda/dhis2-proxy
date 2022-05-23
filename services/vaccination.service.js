@@ -77,16 +77,16 @@ module.exports = {
             },
           },
         ];
-        const previous = await ctx.call("es.search2", {
-          index: "epivac",
-          body: {
-            query: {
-              bool: must,
-            },
-          },
-        });
+        // const previous = await ctx.call("es.search2", {
+        //   index: "epivac",
+        //   body: {
+        //     query: {
+        //       bool: must,
+        //     },
+        //   },
+        // });
 
-        console.log(previous);
+        console.log(must);
 
         // let doseUnits = [];
         // let data = await this.fetchCertificate(identifier, phone);
