@@ -54,8 +54,6 @@ module.exports = {
       async handler(ctx) {
         const { phone, identifier } = ctx.params;
         let must = [
-          { match: { Ewi7FUfcHAD: identifier } },
-
           {
             bool: {
               should: [
@@ -77,14 +75,14 @@ module.exports = {
             },
           },
         ];
-        // const previous = await ctx.call("es.search2", {
-        //   index: "epivac",
-        //   body: {
-        //     query: {
-        //       bool: must,
-        //     },
-        //   },
-        // });
+        const previous = await ctx.call("es.search2", {
+          index: "epivac",
+          body: {
+            query: {
+              bool: must,
+            },
+          },
+        });
 
         console.log(must);
 
