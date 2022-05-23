@@ -100,10 +100,7 @@ module.exports = {
             },
           },
         });
-        if (hits.length > 0) {
-          return hits[0]._source;
-        }
-        return {};
+        return hits;
       },
     },
     searchByValues: {
@@ -190,6 +187,23 @@ module.exports = {
           body: ctx.params.body,
         });
         return body;
+      },
+    },
+    search2: {
+      params: {
+        index: "string",
+        body: "object",
+      },
+      async handler(ctx) {
+        const {
+          body: {
+            hits: { hits },
+          },
+        } = await client.search({
+          index: ctx.params.index,
+          body: ctx.params.body,
+        });
+        return hits.map((h) => h._source);
       },
     },
     scroll: {

@@ -53,165 +53,191 @@ module.exports = {
     certificate: {
       async handler(ctx) {
         const { phone, identifier } = ctx.params;
-        const previous = await ctx.call("es.search", {
-          index: "certificates",
+        let must = [
+          { match: { Ewi7FUfcHAD: identifier } },
+
+          {
+            bool: {
+              should: [
+                { match: { Ewi7FUfcHAD: identifier } },
+                { match: { YvnFn4IjKzx: identifier } },
+              ],
+            },
+          },
+          {
+            wildcard: {
+              ciCR6BBvIT4: {
+                value: `*${phone}`,
+              },
+            },
+          },
+          {
+            match: {
+              event_deleted: false,
+            },
+          },
+        ];
+        const previous = await ctx.call("es.search2", {
+          index: "epivac",
           body: {
             query: {
-              match: { id: identifier },
+              bool: must,
             },
           },
         });
 
-        let doseUnits = [];
-        let data = await this.fetchCertificate(identifier, phone);
+        console.log(previous);
 
-        if (previous.length > 0) {
-          const previousData = previous[0]._source;
-          data = {
-            ...data,
-            certificate: previousData.certificate
-              ? previousData.certificate
-              : Math.floor(
-                  Math.random() * (99999999 - 10000000 + 1) + 10000000
-                ),
-          };
-        } else {
-          data = {
-            ...data,
-            certificate: Math.floor(
-              Math.random() * (99999999 - 10000000 + 1) + 10000000
-            ),
-          };
-        }
+        // let doseUnits = [];
+        // let data = await this.fetchCertificate(identifier, phone);
 
-        if (data.DOSE1) {
-          doseUnits.push(data.DOSE1.orgUnit);
-        }
+        // if (previous.length > 0) {
+        //   const previousData = previous[0]._source;
+        //   data = {
+        //     ...data,
+        //     certificate: previousData.certificate
+        //       ? previousData.certificate
+        //       : Math.floor(
+        //           Math.random() * (99999999 - 10000000 + 1) + 10000000
+        //         ),
+        //   };
+        // } else {
+        //   data = {
+        //     ...data,
+        //     certificate: Math.floor(
+        //       Math.random() * (99999999 - 10000000 + 1) + 10000000
+        //     ),
+        //   };
+        // }
 
-        if (data.DOSE2) {
-          doseUnits.push(data.DOSE2.orgUnit);
-        }
+        // if (data.DOSE1) {
+        //   doseUnits.push(data.DOSE1.orgUnit);
+        // }
 
-        if (data.BOOSTER1) {
-          doseUnits.push(data.BOOSTER1.orgUnit);
-        }
+        // if (data.DOSE2) {
+        //   doseUnits.push(data.DOSE2.orgUnit);
+        // }
 
-        if (data.BOOSTER2) {
-          doseUnits.push(data.BOOSTER2.orgUnit);
-        }
+        // if (data.BOOSTER1) {
+        //   doseUnits.push(data.BOOSTER1.orgUnit);
+        // }
 
-        const allFacilities = uniq(doseUnits);
+        // if (data.BOOSTER2) {
+        //   doseUnits.push(data.BOOSTER2.orgUnit);
+        // }
 
-        const facilities = await Promise.all(
-          allFacilities.map((id) => {
-            return ctx.call("es.search", {
-              index: "facilities",
-              body: {
-                query: {
-                  match: { id },
-                },
-              },
-            });
-          })
-        );
-        let foundFacilities = fromPairs(
-          facilities
-            .map((response) => {
-              const [data] = response?.hits?.hits;
-              if (data && data._source) {
-                const {
-                  _source: { id, ...rest },
-                } = data;
-                return [id, { id, ...rest }];
-              }
-              return null;
-            })
-            .filter((d) => d !== null)
-        );
+        // const allFacilities = uniq(doseUnits);
 
-        let DOSE1 = data.DOSE1;
-        let DOSE2 = data.DOSE2;
-        let BOOSTER1 = data.BOOSTER1;
-        let BOOSTER2 = data.BOOSTER2;
+        // const facilities = await Promise.all(
+        //   allFacilities.map((id) => {
+        //     return ctx.call("es.search", {
+        //       index: "facilities",
+        //       body: {
+        //         query: {
+        //           match: { id },
+        //         },
+        //       },
+        //     });
+        //   })
+        // );
+        // let foundFacilities = fromPairs(
+        //   facilities
+        //     .map((response) => {
+        //       const [data] = response?.hits?.hits;
+        //       if (data && data._source) {
+        //         const {
+        //           _source: { id, ...rest },
+        //         } = data;
+        //         return [id, { id, ...rest }];
+        //       }
+        //       return null;
+        //     })
+        //     .filter((d) => d !== null)
+        // );
 
-        if (DOSE1) {
-          const facility = foundFacilities[DOSE1.orgUnit] || {};
-          DOSE1 = {
-            ...DOSE1,
-            ...facility,
-          };
-          const siteChange = defenceUnits[DOSE1.orgUnit];
-          if (siteChange) {
-            DOSE1 = {
-              ...DOSE1,
-              name: siteChange,
-              orgUnitName: siteChange,
-            };
-          }
-        }
+        // let DOSE1 = data.DOSE1;
+        // let DOSE2 = data.DOSE2;
+        // let BOOSTER1 = data.BOOSTER1;
+        // let BOOSTER2 = data.BOOSTER2;
 
-        if (DOSE2) {
-          const facility = foundFacilities[DOSE2.orgUnit] || {};
-          DOSE2 = {
-            ...DOSE2,
-            ...facility,
-          };
-          const siteChange = defenceUnits[DOSE2.orgUnit];
-          if (siteChange) {
-            DOSE2 = {
-              ...DOSE2,
-              name: siteChange,
-              orgUnitName: siteChange,
-            };
-          }
-        }
+        // if (DOSE1) {
+        //   const facility = foundFacilities[DOSE1.orgUnit] || {};
+        //   DOSE1 = {
+        //     ...DOSE1,
+        //     ...facility,
+        //   };
+        //   const siteChange = defenceUnits[DOSE1.orgUnit];
+        //   if (siteChange) {
+        //     DOSE1 = {
+        //       ...DOSE1,
+        //       name: siteChange,
+        //       orgUnitName: siteChange,
+        //     };
+        //   }
+        // }
 
-        if (BOOSTER1) {
-          const facility = foundFacilities[BOOSTER1.orgUnit] || {};
-          BOOSTER1 = {
-            ...BOOSTER1,
-            ...facility,
-          };
-          const siteChange = defenceUnits[BOOSTER1.orgUnit];
-          if (siteChange) {
-            BOOSTER1 = {
-              ...BOOSTER1,
-              name: siteChange,
-              orgUnitName: siteChange,
-            };
-          }
-        }
+        // if (DOSE2) {
+        //   const facility = foundFacilities[DOSE2.orgUnit] || {};
+        //   DOSE2 = {
+        //     ...DOSE2,
+        //     ...facility,
+        //   };
+        //   const siteChange = defenceUnits[DOSE2.orgUnit];
+        //   if (siteChange) {
+        //     DOSE2 = {
+        //       ...DOSE2,
+        //       name: siteChange,
+        //       orgUnitName: siteChange,
+        //     };
+        //   }
+        // }
 
-        if (BOOSTER2) {
-          const facility = foundFacilities[BOOSTER2.orgUnit] || {};
-          BOOSTER2 = {
-            ...BOOSTER2,
-            ...facility,
-          };
-          const siteChange = defenceUnits[BOOSTER2.orgUnit];
-          if (siteChange) {
-            BOOSTER2 = {
-              ...BOOSTER2,
-              name: siteChange,
-              orgUnitName: siteChange,
-            };
-          }
-        }
+        // if (BOOSTER1) {
+        //   const facility = foundFacilities[BOOSTER1.orgUnit] || {};
+        //   BOOSTER1 = {
+        //     ...BOOSTER1,
+        //     ...facility,
+        //   };
+        //   const siteChange = defenceUnits[BOOSTER1.orgUnit];
+        //   if (siteChange) {
+        //     BOOSTER1 = {
+        //       ...BOOSTER1,
+        //       name: siteChange,
+        //       orgUnitName: siteChange,
+        //     };
+        //   }
+        // }
 
-        const currentData = {
-          ...data,
-          DOSE1,
-          DOSE2,
-          BOOSTER2,
-          BOOSTER1,
-          id: identifier,
-        };
-        await ctx.call("es.bulk", {
-          index: "certificates",
-          dataset: [currentData],
-          id: "id",
-        });
-        return currentData;
+        // if (BOOSTER2) {
+        //   const facility = foundFacilities[BOOSTER2.orgUnit] || {};
+        //   BOOSTER2 = {
+        //     ...BOOSTER2,
+        //     ...facility,
+        //   };
+        //   const siteChange = defenceUnits[BOOSTER2.orgUnit];
+        //   if (siteChange) {
+        //     BOOSTER2 = {
+        //       ...BOOSTER2,
+        //       name: siteChange,
+        //       orgUnitName: siteChange,
+        //     };
+        //   }
+        // }
+
+        // const currentData = {
+        //   ...data,
+        //   DOSE1,
+        //   DOSE2,
+        //   BOOSTER2,
+        //   BOOSTER1,
+        //   id: identifier,
+        // };
+        // await ctx.call("es.bulk", {
+        //   index: "certificates",
+        //   dataset: [currentData],
+        //   id: "id",
+        // });
+        return {};
       },
     },
     updateTrackedEntityInstance: {
