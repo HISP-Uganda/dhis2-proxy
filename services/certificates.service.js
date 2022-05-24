@@ -255,7 +255,7 @@ module.exports = {
     generate: async (data) => {
       const attributes =
         data["DOSE1"] || data["DOSE2"] || data["BOOSTER1"] || data["BOOSTER1"];
-      const names = `Name:${attributes[NAME_ATTRIBUTE]}\nIdentifier:${
+      const names = `Name:${attributes[NAME_ATTRIBUTE] || ""}\nIdentifier:${
         attributes.identifier
       }\nSex:${attributes[SEX_ATTRIBUTE]}\nDOB:${
         attributes[DOB_ATTRIBUTE] || " "
@@ -300,7 +300,7 @@ module.exports = {
       }
 
       const qr = await QRCode.toDataURL(
-        `${names}${dose1}${dose2}${booster1}${booster2}\nClick to verify\nhttps://epivac.health.go.ug/certificates/#/validate/${data.trackedEntityInstance}`,
+        `${names}${dose1}${dose2}${booster1}${booster2}\nClick to verify\nhttps://epivac.health.go.ug/certificates/#/validate/${attributes["tei_uid"]}`,
         { margin: 0 }
       );
       return qr;
