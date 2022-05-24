@@ -95,7 +95,7 @@ module.exports = {
           const allFacilityIds = uniq(
             previous.map((facility) => facility.orgunit)
           );
-          const facilities = ctx.call("es.search2", {
+          const facilities = await ctx.call("es.search2", {
             index: "facilities",
             body: {
               query: {
