@@ -159,7 +159,7 @@ module.exports = {
           });
 
           const allInfo = {
-            ...pp,
+            ...fromPairs(pp),
             ...foundBoosters,
           };
           console.log(allInfo);
