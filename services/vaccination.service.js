@@ -125,6 +125,7 @@ module.exports = {
             p = {
               ...p,
               ...facility,
+              identifier: p[NIN_ATTRIBUTE] || p[OTHER_ID],
             };
             const siteChange = defenceUnits[p.orgunit];
             if (siteChange) {
