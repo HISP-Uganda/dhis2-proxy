@@ -121,7 +121,7 @@ module.exports = {
           const event = {
             ...data.DOSE2,
             bbnyNYD1wgS: data.DOSE2[ELSEWHERE_VACCINE] || "",
-            eventDate,
+            event_execution_date:eventDate,
             orgUnitName: facility,
             rpkH9ZPGJcX: data.DOSE2[ELSEWHERE_MAN] || "",
             Yp1F4txx8tm: data.DOSE2[ELSEWHERE_BATCH] || "",
@@ -140,7 +140,7 @@ module.exports = {
           const event = {
             ...data.DOSE1,
             bbnyNYD1wgS: data.DOSE1[ELSEWHERE_VACCINE] || "",
-            eventDate,
+            event_execution_date:eventDate,
             orgUnitName: facility,
             rpkH9ZPGJcX: data.DOSE1[ELSEWHERE_MAN] || "",
             Yp1F4txx8tm: data.DOSE1[ELSEWHERE_BATCH] || "",
@@ -266,7 +266,7 @@ module.exports = {
       if (data.DOSE1) {
         dose1 = `${data.DOSE1.bbnyNYD1wgS}:${new Intl.DateTimeFormat(
           "fr"
-        ).format(Date.parse(data.DOSE1.eventDate))},${data.DOSE1.orgUnitName},${
+        ).format(Date.parse(data.DOSE1.event_execution_date))},${data.DOSE1.orgUnitName},${
           data.DOSE1.districtName || ""
         }\n`;
       }
@@ -274,7 +274,7 @@ module.exports = {
       if (data.DOSE2) {
         dose2 = `${data.DOSE2.bbnyNYD1wgS}:${new Intl.DateTimeFormat(
           "fr"
-        ).format(Date.parse(data.DOSE2.eventDate))},${data.DOSE2.orgUnitName},${
+        ).format(Date.parse(data.DOSE2.event_execution_date))},${data.DOSE2.orgUnitName},${
           data.DOSE2.districtName || ""
         }\n`;
       }
@@ -282,7 +282,7 @@ module.exports = {
       if (data.BOOSTER1) {
         booster1 = `${data.BOOSTER1.bbnyNYD1wgS}:${new Intl.DateTimeFormat(
           "fr"
-        ).format(Date.parse(data.BOOSTER1.eventDate))},${
+        ).format(Date.parse(data.BOOSTER1.event_execution_date))},${
           data.BOOSTER1.orgUnitName
         },${data.BOOSTER1.districtName || ""}\n`;
       }
@@ -290,7 +290,7 @@ module.exports = {
       if (data.BOOSTER2) {
         booster2 = `${data.BOOSTER2.bbnyNYD1wgS}:${new Intl.DateTimeFormat(
           "fr"
-        ).format(Date.parse(data.BOOSTER2.eventDate))},${
+        ).format(Date.parse(data.BOOSTER2.event_execution_date))},${
           data.BOOSTER2.orgUnitName
         },${data.BOOSTER2.districtName || ""}\n`;
       }
