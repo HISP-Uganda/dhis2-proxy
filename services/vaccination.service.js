@@ -158,11 +158,10 @@ module.exports = {
             return [dose, gotDoses.length > 0 ? gotDoses[0] : {}];
           });
 
-          const allInfo = {
+          return {
             ...fromPairs(pp),
             ...foundBoosters,
           };
-          console.log(allInfo);
         }
 
         // let doseUnits = [];
