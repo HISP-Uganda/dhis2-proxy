@@ -93,7 +93,7 @@ module.exports = {
 
         if (previous.length > 0) {
           const allFacilityIds = uniq(
-            previous.map((facility) => facility.orgunit)
+            previous.map((facility) => String(facility.orgunit).toLowerCase())
           );
           const facilities = await ctx.call("es.search2", {
             index: "facilities",
