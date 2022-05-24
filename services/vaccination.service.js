@@ -104,7 +104,55 @@ module.exports = {
             },
           });
 
-          console.log(facilities);
+          let foundFacilities = fromPairs(
+            facilities.map(({ id, ...rest }) => {
+              return [id, { id, ...rest }];
+            })
+          );
+
+          const previousWithFacilities = previous.map((p) => {
+            const facility = foundFacilities[p.orgunit] || {};
+            p = {
+              ...p,
+              ...facility,
+            };
+            const siteChange = defenceUnits[p.orgunit];
+            if (siteChange) {
+              p = {
+                ...p,
+                name: siteChange,
+                orgUnitName: siteChange,
+              };
+            }
+            return p;
+          });
+
+          const doses = groupBy(previousWithFacilities, "LUIsbsm3okG");
+
+          const boosters = doses["BOOSTER"];
+          let foundBoosters = {};
+          if (boosters) {
+            const sortedByEventDate = orderBy(
+              boosters,
+              ["event_execution_date"],
+              ["desc"]
+            )
+              .slice(0, 2)
+              .reverse()
+              .map((d, i) => [`BOOSTER${i + 1}`, d]);
+            foundBoosters = fromPairs(sortedByEventDate);
+          }
+
+          const pp = Object.entries(doses).map(([dose, allDoses]) => {
+            const gotDoses = mergeByKey("LUIsbsm3okG", allDoses);
+            return [dose, gotDoses.length > 0 ? gotDoses[0] : {}];
+          });
+
+          const allInfo = {
+            ...pp,
+            ...foundBoosters,
+          };
+          console.log(allInfo);
         }
 
         // let doseUnits = [];
