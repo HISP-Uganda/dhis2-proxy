@@ -121,7 +121,7 @@ module.exports = {
           const event = {
             ...data.DOSE2,
             bbnyNYD1wgS: data.DOSE2[ELSEWHERE_VACCINE] || "",
-            event_execution_date:eventDate,
+            event_execution_date: eventDate,
             orgUnitName: facility,
             rpkH9ZPGJcX: data.DOSE2[ELSEWHERE_MAN] || "",
             Yp1F4txx8tm: data.DOSE2[ELSEWHERE_BATCH] || "",
@@ -140,7 +140,7 @@ module.exports = {
           const event = {
             ...data.DOSE1,
             bbnyNYD1wgS: data.DOSE1[ELSEWHERE_VACCINE] || "",
-            event_execution_date:eventDate,
+            event_execution_date: eventDate,
             orgUnitName: facility,
             rpkH9ZPGJcX: data.DOSE1[ELSEWHERE_MAN] || "",
             Yp1F4txx8tm: data.DOSE1[ELSEWHERE_BATCH] || "",
@@ -253,9 +253,13 @@ module.exports = {
    */
   methods: {
     generate: async (data) => {
-      const names = `Name:${data[NAME_ATTRIBUTE]}\nIdentifier:${data.id}\nSex:${
-        data[SEX_ATTRIBUTE]
-      }\nDOB:${data[DOB_ATTRIBUTE] || " "}\nPHONE:${data[PHONE_ATTRIBUTE]}\n`;
+      const attributes =
+        data["DOSE1"] || data["DOSE2"] || data["BOOSTER1"] || data["BOOSTER1"];
+      const names = `Name:${attributes[NAME_ATTRIBUTE]}\nIdentifier:${
+        attributes.identifier
+      }\nSex:${attributes[SEX_ATTRIBUTE]}\nDOB:${
+        attributes[DOB_ATTRIBUTE] || " "
+      }\nPHONE:${attributes[PHONE_ATTRIBUTE]}\n`;
 
       let dose1 = "";
       let dose2 = "";
@@ -266,24 +270,24 @@ module.exports = {
       if (data.DOSE1) {
         dose1 = `${data.DOSE1.bbnyNYD1wgS}:${new Intl.DateTimeFormat(
           "fr"
-        ).format(Date.parse(data.DOSE1.event_execution_date))},${data.DOSE1.orgUnitName},${
-          data.DOSE1.districtName || ""
-        }\n`;
+        ).format(Date.parse(data.DOSE1.event_execution_date))},${
+          data.DOSE1.name
+        },${data.DOSE1.districtName || ""}\n`;
       }
 
       if (data.DOSE2) {
         dose2 = `${data.DOSE2.bbnyNYD1wgS}:${new Intl.DateTimeFormat(
           "fr"
-        ).format(Date.parse(data.DOSE2.event_execution_date))},${data.DOSE2.orgUnitName},${
-          data.DOSE2.districtName || ""
-        }\n`;
+        ).format(Date.parse(data.DOSE2.event_execution_date))},${
+          data.DOSE2.name
+        },${data.DOSE2.districtName || ""}\n`;
       }
 
       if (data.BOOSTER1) {
         booster1 = `${data.BOOSTER1.bbnyNYD1wgS}:${new Intl.DateTimeFormat(
           "fr"
         ).format(Date.parse(data.BOOSTER1.event_execution_date))},${
-          data.BOOSTER1.orgUnitName
+          data.BOOSTER1.name
         },${data.BOOSTER1.districtName || ""}\n`;
       }
 
@@ -291,7 +295,7 @@ module.exports = {
         booster2 = `${data.BOOSTER2.bbnyNYD1wgS}:${new Intl.DateTimeFormat(
           "fr"
         ).format(Date.parse(data.BOOSTER2.event_execution_date))},${
-          data.BOOSTER2.orgUnitName
+          data.BOOSTER2.name
         },${data.BOOSTER2.districtName || ""}\n`;
       }
 
