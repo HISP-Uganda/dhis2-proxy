@@ -80,6 +80,16 @@ module.exports = {
               tei_deleted: false,
             },
           },
+          {
+            exists: {
+              field: "bbnyNYD1wgS",
+            },
+          },
+          {
+            exists: {
+              field: "LUIsbsm3okG",
+            },
+          },
         ];
 
         const previous = await ctx.call("es.search2", {
