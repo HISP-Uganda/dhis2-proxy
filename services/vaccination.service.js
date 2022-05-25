@@ -92,7 +92,7 @@ module.exports = {
           },
         ];
 
-        const previous = await ctx.call("es.search2", {
+        let previous = await ctx.call("es.search2", {
           index: "epivac",
           body: {
             query: {
@@ -103,8 +103,34 @@ module.exports = {
 
         if (previous.length > 0) {
           const allFacilityIds = uniq(
-            previous.map((facility) => String(facility.orgunit).toLowerCase())
+            previous.map((record) => String(record.orgunit).toLowerCase())
           );
+          const allTies = uniq(
+            previous.map((record) => String(record.tei_uid).toLowerCase())
+          );
+          const allCertificateNos = uniq(
+            previous.flatMap((record) => {
+              if (record.certificate) {
+                return [record.certificate];
+              }
+              return [];
+            })
+          );
+
+          if (allCertificateNos.length === 0) {
+            previous = previous.map((p) => {
+              return {
+                ...p,
+                certificate: Math.floor(
+                  Math.random() * (99999999 - 10000000 + 1) + 10000000
+                ),
+              };
+            });
+          } else if (allCertificateNos.length > 0) {
+            previous = previous.map((p) => {
+              return { ...p, certificate: allCertificateNos[0] };
+            });
+          }
           const facilities = await ctx.call("es.search2", {
             index: "facilities",
             body: {
@@ -120,12 +146,13 @@ module.exports = {
             })
           );
 
-          const previousWithFacilities = previous.map((p) => {
+          previous = previous.map((p) => {
             const facility = foundFacilities[p.orgunit] || {};
             p = {
               ...p,
               ...facility,
               identifier: p[NIN_ATTRIBUTE] || p[OTHER_ID],
+              matched: allTies.join("").toLowerCase(),
             };
             const siteChange = defenceUnits[p.orgunit];
             if (siteChange) {
@@ -135,10 +162,24 @@ module.exports = {
                 orgUnitName: siteChange,
               };
             }
+            if (p.views) {
+              p = {
+                ...p,
+                views: p.views + 1,
+              };
+            } else {
+              p = { ...p, views: 1 };
+            }
             return p;
           });
 
-          const doses = groupBy(previousWithFacilities, "LUIsbsm3okG");
+          await ctx.call("es.bulk", {
+            index: "epivac",
+            dataset: previous,
+            id: "id",
+          });
+
+          const doses = groupBy(previous, "LUIsbsm3okG");
 
           const boosters = doses["BOOSTER"];
           let foundBoosters = {};
@@ -153,12 +194,10 @@ module.exports = {
               .map((d, i) => [`BOOSTER${i + 1}`, d]);
             foundBoosters = fromPairs(sortedByEventDate);
           }
-
           const pp = Object.entries(doses).map(([dose, allDoses]) => {
             const gotDoses = mergeByKey("LUIsbsm3okG", allDoses);
             return [dose, gotDoses.length > 0 ? gotDoses[0] : {}];
           });
-
           return {
             ...fromPairs(pp),
             ...foundBoosters,
@@ -169,7 +208,7 @@ module.exports = {
         // let data = await this.fetchCertificate(identifier, phone);
         // if (previous.length > 0) {
         //   const previousData = previous[0]._source;
-        
+
         // }
 
         // await ctx.call("es.bulk", {

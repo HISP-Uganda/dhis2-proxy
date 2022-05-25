@@ -227,7 +227,38 @@ module.exports = {
         path: "/validate/:trackedEntityInstance",
       },
       async handler(ctx) {
-        return await ctx.call("es.searchTrackedEntityInstance", ctx.params);
+        const allData = await ctx.call("es.search2", {
+          index: "epivac",
+          body: {
+            query: {
+              match: { matched: ctx.params.trackedEntityInstance },
+            },
+          },
+        });
+
+        const doses = groupBy(allData, "LUIsbsm3okG");
+
+        const boosters = doses["BOOSTER"];
+        let foundBoosters = {};
+        if (boosters) {
+          const sortedByEventDate = orderBy(
+            boosters,
+            ["event_execution_date"],
+            ["desc"]
+          )
+            .slice(0, 2)
+            .reverse()
+            .map((d, i) => [`BOOSTER${i + 1}`, d]);
+          foundBoosters = fromPairs(sortedByEventDate);
+        }
+        const pp = Object.entries(doses).map(([dose, allDoses]) => {
+          const gotDoses = mergeByKey("LUIsbsm3okG", allDoses);
+          return [dose, gotDoses.length > 0 ? gotDoses[0] : {}];
+        });
+        return {
+          ...fromPairs(pp),
+          ...foundBoosters,
+        };
       },
     },
     search: {
@@ -307,7 +338,7 @@ module.exports = {
       }
 
       const qr = await QRCode.toDataURL(
-        `${names}${dose1}${dose2}${booster1}${booster2}\nClick to verify\nhttps://epivac.health.go.ug/certificates/#/validate/${attributes["tei_uid"]}`,
+        `${names}${dose1}${dose2}${booster1}${booster2}\nClick to verify\nhttps://epivac.health.go.ug/certificates/#/validate/${data.matched}`,
         { margin: 0 }
       );
       return qr;
