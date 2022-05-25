@@ -1,6 +1,8 @@
 "use strict";
 const QRCode = require("qrcode");
 const { isEmpty, groupBy } = require("lodash");
+const mergeByKey = require("array-merge-by-key");
+
 /**
  * @typedef {import('moleculer').Context} Context Moleculer's Context
  */
