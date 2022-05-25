@@ -63,6 +63,7 @@ module.exports = {
       async handler(ctx) {
         let data = await ctx.call("vaccination.certificate", ctx.params);
         if (!isEmpty(data)) {
+          const qr = await this.generate(data);
           if (
             data.BOOSTER1 &&
             data.BOOSTER1.vk2nF6wZwY4 &&
