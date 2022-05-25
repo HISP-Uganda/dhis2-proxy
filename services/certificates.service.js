@@ -339,7 +339,7 @@ module.exports = {
       }
 
       const qr = await QRCode.toDataURL(
-        `${names}${dose1}${dose2}${booster1}${booster2}\nClick to verify\nhttps://epivac.health.go.ug/certificates/#/validate/${data.matched}`,
+        `${names}${dose1}${dose2}${booster1}${booster2}\nClick to verify\nhttps://epivac.health.go.ug/certificates/#/validate/${attributes.matched}`,
         { margin: 0 }
       );
       return qr;
