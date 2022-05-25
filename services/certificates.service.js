@@ -1,6 +1,6 @@
 "use strict";
 const QRCode = require("qrcode");
-const { isEmpty, groupBy } = require("lodash");
+const { isEmpty, groupBy, fromPairs, orderBy } = require("lodash");
 const mergeByKey = require("array-merge-by-key");
 
 /**
