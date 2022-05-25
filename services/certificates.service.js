@@ -1,6 +1,6 @@
 "use strict";
 const QRCode = require("qrcode");
-const { isEmpty } = require("lodash");
+const { isEmpty, groupBy } = require("lodash");
 /**
  * @typedef {import('moleculer').Context} Context Moleculer's Context
  */
