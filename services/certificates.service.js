@@ -239,6 +239,8 @@ module.exports = {
           },
         });
 
+        console.log(allData);
+
         const doses = groupBy(allData, "LUIsbsm3okG");
 
         const boosters = doses["BOOSTER"];
