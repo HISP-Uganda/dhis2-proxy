@@ -124,6 +124,7 @@ module.exports = {
             data.BOOSTER1.vk2nF6wZwY4 &&
             data.BOOSTER1.lySxMCMSo8Z
           ) {
+            const eventDate = data.BOOSTER1.lySxMCMSo8Z;
             const { facility, district } = findDistrictAndFacility(
               data,
               "BOOSTER1"
