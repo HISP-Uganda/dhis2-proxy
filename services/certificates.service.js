@@ -137,8 +137,7 @@ module.exports = {
               districtName: district,
             };
             const doseNumber = data.BOOSTER1.AoHMuBgBlkc;
-            data = { ...data, [doseNumber]: event };
-            console.log(data);
+            data = { ...data, eligible: true, [doseNumber]: event, doses: 1 };
             return { ...data, qr, type: "Fully", doses: 1 };
           } else if (!isEmpty(data) && data.DOSE2) {
             return {
