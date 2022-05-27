@@ -138,6 +138,7 @@ module.exports = {
             };
             const doseNumber = data.BOOSTER1.AoHMuBgBlkc;
             data = { ...data, [doseNumber]: event };
+            console.log(data);
             return { ...data, qr, type: "Fully", doses: 1 };
           } else if (!isEmpty(data) && data.DOSE2) {
             return {
