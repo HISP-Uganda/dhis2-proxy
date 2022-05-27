@@ -81,6 +81,11 @@ module.exports = {
             },
           },
           {
+            match: {
+              pi_deleted: false,
+            },
+          },
+          {
             exists: {
               field: "bbnyNYD1wgS",
             },

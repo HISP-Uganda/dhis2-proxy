@@ -171,6 +171,13 @@ module.exports = {
               qr,
               eligible: true,
             };
+          } else if (!isEmpty(data) && data.BOOSTER1) {
+            return {
+              ...data,
+              type: "Partially",
+              qr,
+              eligible: true,
+            };
           } else if (!isEmpty(data) && (data.DOSE1 || data.DOSE2)) {
             return {
               eligible: false,
