@@ -67,44 +67,6 @@ module.exports = {
         if (!isEmpty(data)) {
           const qr = await this.generate(data);
           if (
-            data.BOOSTER1 &&
-            data.BOOSTER1.vk2nF6wZwY4 &&
-            data.BOOSTER1.lySxMCMSo8Z
-          ) {
-            const { facility, district } = findDistrictAndFacility(
-              data,
-              "BOOSTER1"
-            );
-            const event = {
-              ...data.BOOSTER1,
-              bbnyNYD1wgS: data.BOOSTER1[ELSEWHERE_VACCINE] || "",
-              orgUnitName: facility,
-              rpkH9ZPGJcX: data.BOOSTER1[ELSEWHERE_MAN] || "",
-              Yp1F4txx8tm: data.BOOSTER1[ELSEWHERE_BATCH] || "",
-              districtName: district,
-            };
-            data = { ...data, BOOSTER1: event };
-          }
-          if (
-            data.BOOSTER2 &&
-            data.BOOSTER2.vk2nF6wZwY4 &&
-            data.BOOSTER2.lySxMCMSo8Z
-          ) {
-            const { facility, district } = findDistrictAndFacility(
-              data,
-              "BOOSTER2"
-            );
-            const event = {
-              ...data.BOOSTER2,
-              bbnyNYD1wgS: data.BOOSTER2[ELSEWHERE_VACCINE] || "",
-              orgUnitName: facility,
-              rpkH9ZPGJcX: data.BOOSTER2[ELSEWHERE_MAN] || "",
-              Yp1F4txx8tm: data.BOOSTER2[ELSEWHERE_BATCH] || "",
-              districtName: district,
-            };
-            data = { ...data, BOOSTER2: event };
-          }
-          if (
             !isEmpty(data) &&
             data.DOSE1 &&
             data.DOSE1.bbnyNYD1wgS === "Johnson and Johnson"
@@ -156,6 +118,26 @@ module.exports = {
               districtName: district,
             };
             data = { ...data, DOSE2: event, eligible: true, doses: 2 };
+            return { ...data, qr, type: "Fully", doses: 2 };
+          } else if (
+            data.BOOSTER1 &&
+            data.BOOSTER1.vk2nF6wZwY4 &&
+            data.BOOSTER1.lySxMCMSo8Z
+          ) {
+            const { facility, district } = findDistrictAndFacility(
+              data,
+              "BOOSTER1"
+            );
+            const event = {
+              ...data.BOOSTER1,
+              bbnyNYD1wgS: data.BOOSTER1[ELSEWHERE_VACCINE] || "",
+              orgUnitName: facility,
+              rpkH9ZPGJcX: data.BOOSTER1[ELSEWHERE_MAN] || "",
+              Yp1F4txx8tm: data.BOOSTER1[ELSEWHERE_BATCH] || "",
+              districtName: district,
+            };
+            const doseNumber = data.BOOSTER1.AoHMuBgBlkc;
+            data = { ...data, [doseNumber]: event };
             return { ...data, qr, type: "Fully", doses: 2 };
           } else if (!isEmpty(data) && data.DOSE2) {
             return {
