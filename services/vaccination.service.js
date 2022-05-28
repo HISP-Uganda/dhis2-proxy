@@ -186,11 +186,11 @@ module.exports = {
 
           const doses = groupBy(previous, "LUIsbsm3okG");
 
-          const boosters = doses["BOOSTER"];
+          const { BOOSTER, ...others } = doses;
           let foundBoosters = {};
-          if (boosters) {
+          if (BOOSTER) {
             const sortedByEventDate = orderBy(
-              boosters,
+              BOOSTER,
               ["event_execution_date"],
               ["desc"]
             )
@@ -199,7 +199,7 @@ module.exports = {
               .map((d, i) => [`BOOSTER${i + 1}`, d]);
             foundBoosters = fromPairs(sortedByEventDate);
           }
-          const pp = Object.entries(doses).map(([dose, allDoses]) => {
+          const pp = Object.entries(others).map(([dose, allDoses]) => {
             const gotDoses = mergeByKey("LUIsbsm3okG", allDoses);
             return [dose, gotDoses.length > 0 ? gotDoses[0] : {}];
           });
