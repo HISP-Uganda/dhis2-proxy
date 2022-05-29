@@ -128,7 +128,6 @@ module.exports = {
 
             const updatedData = {
               ...data,
-              qr,
               type: "Fully",
               doses: 2,
               DOSE2: event,
@@ -159,7 +158,6 @@ module.exports = {
             const doseNumber = data.BOOSTER1.AoHMuBgBlkc;
             const updatedData = {
               ...data,
-              qr,
               type: "Fully",
               doses: 1,
               eligible: true,
@@ -172,7 +170,6 @@ module.exports = {
               ...data,
               eligible: true,
               type: "Partial",
-              qr,
             };
             const qr = await this.generate(updatedData);
             return { ...updatedData, qr };
@@ -180,7 +177,6 @@ module.exports = {
             const updatedData = {
               ...data,
               type: "Partially",
-              qr,
               eligible: true,
             };
             const qr = await this.generate(updatedData);
@@ -189,7 +185,6 @@ module.exports = {
             const updatedData = {
               ...data,
               type: "Partially",
-              qr,
               eligible: true,
             };
             const qr = await this.generate(updatedData);
