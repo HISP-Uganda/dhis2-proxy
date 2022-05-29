@@ -342,6 +342,8 @@ module.exports = {
             [doseNumber]: event,
           };
         }
+
+        return data;
       },
     },
     search: {
