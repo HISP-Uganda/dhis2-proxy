@@ -270,6 +270,7 @@ module.exports = {
           ...fromPairs(pp),
           ...foundBoosters,
         };
+        console.log(data)
         if (
           !isEmpty(data) &&
           data.DOSE2 &&
