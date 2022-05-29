@@ -302,6 +302,7 @@ module.exports = {
    */
   methods: {
     generate: async (data) => {
+      console.log(data)
       const attributes =
         data["DOSE1"] || data["DOSE2"] || data["BOOSTER1"] || data["BOOSTER1"];
       const names = `Name:${attributes[NAME_ATTRIBUTE] || ""}\nIdentifier:${
