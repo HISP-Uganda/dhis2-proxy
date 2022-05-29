@@ -66,14 +66,15 @@ module.exports = {
         let data = await ctx.call("vaccination.certificate", ctx.params);
 
         if (!isEmpty(data)) {
-          const qr = await this.generate(data);
           if (
             !isEmpty(data) &&
             data.DOSE1 &&
             data.DOSE1.bbnyNYD1wgS === "Johnson and Johnson"
           ) {
+            const qr = await this.generate(data);
             return { ...data, qr, eligible: true, type: "Fully", doses: 1 };
           } else if (!isEmpty(data) && data.DOSE1 && data.DOSE2) {
+            const qr = await this.generate(data);
             return { ...data, type: "Fully", qr, eligible: true, doses: 2 };
           } else if (
             !isEmpty(data) &&
@@ -82,7 +83,6 @@ module.exports = {
             data.DOSE2.lySxMCMSo8Z
           ) {
             const eventDate = data.DOSE2.lySxMCMSo8Z;
-
             const { facility, district } = findDistrictAndFacility(
               data,
               "DOSE2"
@@ -96,14 +96,15 @@ module.exports = {
               Yp1F4txx8tm: data.DOSE2[ELSEWHERE_BATCH] || "",
               districtName: district,
             };
-            return {
+            const updatedData = {
               ...data,
               type: "Fully",
-              qr,
               doses: 2,
               DOSE1: event,
               eligible: true,
             };
+            const qr = await this.generate(updatedData);
+            return { ...updatedData, qr };
           } else if (
             !isEmpty(data) &&
             data.DOSE1 &&
@@ -124,7 +125,8 @@ module.exports = {
               Yp1F4txx8tm: data.DOSE1[ELSEWHERE_BATCH] || "",
               districtName: district,
             };
-            return {
+
+            const updatedData = {
               ...data,
               qr,
               type: "Fully",
@@ -132,6 +134,9 @@ module.exports = {
               DOSE2: event,
               eligible: true,
             };
+
+            const qr = await this.generate(updatedData);
+            return { ...updatedData, qr };
           } else if (
             data.BOOSTER1 &&
             data.BOOSTER1.vk2nF6wZwY4 &&
@@ -152,7 +157,7 @@ module.exports = {
               districtName: district,
             };
             const doseNumber = data.BOOSTER1.AoHMuBgBlkc;
-            return {
+            const updatedData = {
               ...data,
               qr,
               type: "Fully",
@@ -160,27 +165,35 @@ module.exports = {
               eligible: true,
               [doseNumber]: event,
             };
+            const qr = await this.generate(updatedData);
+            return { ...updatedData, qr };
           } else if (!isEmpty(data) && data.DOSE2) {
-            return {
+            const updatedData = {
               ...data,
               eligible: true,
               type: "Partial",
               qr,
             };
+            const qr = await this.generate(updatedData);
+            return { ...updatedData, qr };
           } else if (!isEmpty(data) && data.DOSE1 && !data.DOSE1.vk2nF6wZwY4) {
-            return {
+            const updatedData = {
               ...data,
               type: "Partially",
               qr,
               eligible: true,
             };
+            const qr = await this.generate(updatedData);
+            return { ...updatedData, qr };
           } else if (!isEmpty(data) && data.BOOSTER1) {
-            return {
+            const updatedData = {
               ...data,
               type: "Partially",
               qr,
               eligible: true,
             };
+            const qr = await this.generate(updatedData);
+            return { ...updatedData, qr };
           } else if (!isEmpty(data) && (data.DOSE1 || data.DOSE2)) {
             return {
               eligible: false,
@@ -302,7 +315,7 @@ module.exports = {
    */
   methods: {
     generate: async (data) => {
-      console.log(data)
+      console.log(data);
       const attributes =
         data["DOSE1"] || data["DOSE2"] || data["BOOSTER1"] || data["BOOSTER1"];
       const names = `Name:${attributes[NAME_ATTRIBUTE] || ""}\nIdentifier:${
