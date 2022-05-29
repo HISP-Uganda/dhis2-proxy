@@ -64,139 +64,131 @@ module.exports = {
       },
       async handler(ctx) {
         let data = await ctx.call("vaccination.certificate", ctx.params);
+        if (
+          !isEmpty(data) &&
+          data.DOSE1 &&
+          data.DOSE1.bbnyNYD1wgS === "Johnson and Johnson"
+        ) {
+          const qr = await this.generate(data);
+          return { ...data, qr, eligible: true, type: "Fully", doses: 1 };
+        } else if (!isEmpty(data) && data.DOSE1 && data.DOSE2) {
+          const qr = await this.generate(data);
+          return { ...data, type: "Fully", qr, eligible: true, doses: 2 };
+        } else if (
+          !isEmpty(data) &&
+          data.DOSE2 &&
+          data.DOSE2.vk2nF6wZwY4 &&
+          data.DOSE2.lySxMCMSo8Z
+        ) {
+          const eventDate = data.DOSE2.lySxMCMSo8Z;
+          const { facility, district } = findDistrictAndFacility(data, "DOSE2");
+          const event = {
+            ...data.DOSE2,
+            bbnyNYD1wgS: data.DOSE2[ELSEWHERE_VACCINE] || "",
+            event_execution_date: eventDate,
+            name: facility,
+            rpkH9ZPGJcX: data.DOSE2[ELSEWHERE_MAN] || "",
+            Yp1F4txx8tm: data.DOSE2[ELSEWHERE_BATCH] || "",
+            districtName: district,
+          };
+          const updatedData = {
+            ...data,
+            type: "Fully",
+            doses: 2,
+            DOSE1: event,
+            eligible: true,
+          };
+          const qr = await this.generate(updatedData);
+          return { ...updatedData, qr };
+        } else if (
+          !isEmpty(data) &&
+          data.DOSE1 &&
+          data.DOSE1.vk2nF6wZwY4 &&
+          data.DOSE1.lySxMCMSo8Z
+        ) {
+          const eventDate = data.DOSE1.lySxMCMSo8Z;
+          const { facility, district } = findDistrictAndFacility(data, "DOSE1");
+          const event = {
+            ...data.DOSE1,
+            bbnyNYD1wgS: data.DOSE1[ELSEWHERE_VACCINE] || "",
+            event_execution_date: eventDate,
+            name: facility,
+            rpkH9ZPGJcX: data.DOSE1[ELSEWHERE_MAN] || "",
+            Yp1F4txx8tm: data.DOSE1[ELSEWHERE_BATCH] || "",
+            districtName: district,
+          };
 
-        if (!isEmpty(data)) {
-          if (
-            !isEmpty(data) &&
-            data.DOSE1 &&
-            data.DOSE1.bbnyNYD1wgS === "Johnson and Johnson"
-          ) {
-            const qr = await this.generate(data);
-            return { ...data, qr, eligible: true, type: "Fully", doses: 1 };
-          } else if (!isEmpty(data) && data.DOSE1 && data.DOSE2) {
-            const qr = await this.generate(data);
-            return { ...data, type: "Fully", qr, eligible: true, doses: 2 };
-          } else if (
-            !isEmpty(data) &&
-            data.DOSE2 &&
-            data.DOSE2.vk2nF6wZwY4 &&
-            data.DOSE2.lySxMCMSo8Z
-          ) {
-            const eventDate = data.DOSE2.lySxMCMSo8Z;
-            const { facility, district } = findDistrictAndFacility(
-              data,
-              "DOSE2"
-            );
-            const event = {
-              ...data.DOSE2,
-              bbnyNYD1wgS: data.DOSE2[ELSEWHERE_VACCINE] || "",
-              event_execution_date: eventDate,
-              name: facility,
-              rpkH9ZPGJcX: data.DOSE2[ELSEWHERE_MAN] || "",
-              Yp1F4txx8tm: data.DOSE2[ELSEWHERE_BATCH] || "",
-              districtName: district,
-            };
-            const updatedData = {
-              ...data,
-              type: "Fully",
-              doses: 2,
-              DOSE1: event,
-              eligible: true,
-            };
-            const qr = await this.generate(updatedData);
-            return { ...updatedData, qr };
-          } else if (
-            !isEmpty(data) &&
-            data.DOSE1 &&
-            data.DOSE1.vk2nF6wZwY4 &&
-            data.DOSE1.lySxMCMSo8Z
-          ) {
-            const eventDate = data.DOSE1.lySxMCMSo8Z;
-            const { facility, district } = findDistrictAndFacility(
-              data,
-              "DOSE1"
-            );
-            const event = {
-              ...data.DOSE1,
-              bbnyNYD1wgS: data.DOSE1[ELSEWHERE_VACCINE] || "",
-              event_execution_date: eventDate,
-              name: facility,
-              rpkH9ZPGJcX: data.DOSE1[ELSEWHERE_MAN] || "",
-              Yp1F4txx8tm: data.DOSE1[ELSEWHERE_BATCH] || "",
-              districtName: district,
-            };
+          const updatedData = {
+            ...data,
+            type: "Fully",
+            doses: 2,
+            DOSE2: event,
+            eligible: true,
+          };
 
-            const updatedData = {
-              ...data,
-              type: "Fully",
-              doses: 2,
-              DOSE2: event,
-              eligible: true,
-            };
-
-            const qr = await this.generate(updatedData);
-            return { ...updatedData, qr };
-          } else if (
-            data.BOOSTER1 &&
-            data.BOOSTER1.vk2nF6wZwY4 &&
-            data.BOOSTER1.lySxMCMSo8Z
-          ) {
-            const eventDate = data.BOOSTER1.lySxMCMSo8Z;
-            const { facility, district } = findDistrictAndFacility(
-              data,
-              "BOOSTER1"
-            );
-            const event = {
-              ...data.BOOSTER1,
-              bbnyNYD1wgS: data.BOOSTER1[ELSEWHERE_VACCINE] || "",
-              name: facility,
-              event_execution_date: eventDate,
-              rpkH9ZPGJcX: data.BOOSTER1[ELSEWHERE_MAN] || "",
-              Yp1F4txx8tm: data.BOOSTER1[ELSEWHERE_BATCH] || "",
-              districtName: district,
-            };
-            const doseNumber = data.BOOSTER1.AoHMuBgBlkc;
-            const updatedData = {
-              ...data,
-              type: "Fully",
-              doses: 1,
-              eligible: true,
-              [doseNumber]: event,
-            };
-            const qr = await this.generate(updatedData);
-            return { ...updatedData, qr };
-          } else if (!isEmpty(data) && data.DOSE2) {
-            const updatedData = {
-              ...data,
-              eligible: true,
-              type: "Partial",
-            };
-            const qr = await this.generate(updatedData);
-            return { ...updatedData, qr };
-          } else if (!isEmpty(data) && data.DOSE1 && !data.DOSE1.vk2nF6wZwY4) {
-            const updatedData = {
-              ...data,
-              type: "Partially",
-              eligible: true,
-            };
-            const qr = await this.generate(updatedData);
-            return { ...updatedData, qr };
-          } else if (!isEmpty(data) && data.BOOSTER1) {
-            const updatedData = {
-              ...data,
-              type: "Partially",
-              eligible: true,
-            };
-            const qr = await this.generate(updatedData);
-            return { ...updatedData, qr };
-          } else if (!isEmpty(data) && (data.DOSE1 || data.DOSE2)) {
-            return {
-              eligible: false,
-              message:
-                "We could not be able to generate your certificate because of missing or invalid registration information",
-            };
-          }
+          const qr = await this.generate(updatedData);
+          return { ...updatedData, qr };
+        } else if (
+          data.BOOSTER1 &&
+          data.BOOSTER1.vk2nF6wZwY4 &&
+          data.BOOSTER1.lySxMCMSo8Z
+        ) {
+          const eventDate = data.BOOSTER1.lySxMCMSo8Z;
+          const { facility, district } = findDistrictAndFacility(
+            data,
+            "BOOSTER1"
+          );
+          const event = {
+            ...data.BOOSTER1,
+            bbnyNYD1wgS: data.BOOSTER1[ELSEWHERE_VACCINE] || "",
+            name: facility,
+            event_execution_date: eventDate,
+            rpkH9ZPGJcX: data.BOOSTER1[ELSEWHERE_MAN] || "",
+            Yp1F4txx8tm: data.BOOSTER1[ELSEWHERE_BATCH] || "",
+            districtName: district,
+          };
+          const doseNumber = data.BOOSTER1.AoHMuBgBlkc;
+          const updatedData = {
+            ...data,
+            type: "Fully",
+            doses: 1,
+            eligible: true,
+            [doseNumber]: event,
+          };
+          const qr = await this.generate(updatedData);
+          return { ...updatedData, qr };
+        } else if (!isEmpty(data) && data.DOSE2) {
+          const updatedData = {
+            ...data,
+            eligible: true,
+            type: "Partial",
+          };
+          const qr = await this.generate(updatedData);
+          return { ...updatedData, qr };
+        } else if (!isEmpty(data) && data.DOSE1 && !data.DOSE1.vk2nF6wZwY4) {
+          const updatedData = {
+            ...data,
+            type: "Partially",
+            eligible: true,
+          };
+          const qr = await this.generate(updatedData);
+          return { ...updatedData, qr };
+        } else if (!isEmpty(data) && data.BOOSTER1) {
+          const updatedData = {
+            ...data,
+            type: "Partially",
+            eligible: true,
+          };
+          const qr = await this.generate(updatedData);
+          return { ...updatedData, qr };
+        } else if (!isEmpty(data) && (data.DOSE1 || data.DOSE2)) {
+          return {
+            eligible: false,
+            message:
+              "We could not be able to generate your certificate because of missing or invalid registration information",
+          };
         }
+
         return {
           eligible: false,
           message: "You have no registered vaccination information",
@@ -274,10 +266,79 @@ module.exports = {
           const gotDoses = mergeByKey("LUIsbsm3okG", allDoses);
           return [dose, gotDoses.length > 0 ? gotDoses[0] : {}];
         });
-        return {
+        let data = {
           ...fromPairs(pp),
           ...foundBoosters,
         };
+        if (
+          !isEmpty(data) &&
+          data.DOSE2 &&
+          data.DOSE2.vk2nF6wZwY4 &&
+          data.DOSE2.lySxMCMSo8Z
+        ) {
+          const eventDate = data.DOSE2.lySxMCMSo8Z;
+          const { facility, district } = findDistrictAndFacility(data, "DOSE2");
+          const event = {
+            ...data.DOSE2,
+            bbnyNYD1wgS: data.DOSE2[ELSEWHERE_VACCINE] || "",
+            event_execution_date: eventDate,
+            name: facility,
+            rpkH9ZPGJcX: data.DOSE2[ELSEWHERE_MAN] || "",
+            Yp1F4txx8tm: data.DOSE2[ELSEWHERE_BATCH] || "",
+            districtName: district,
+          };
+          return {
+            ...data,
+
+            DOSE1: event,
+          };
+        } else if (
+          !isEmpty(data) &&
+          data.DOSE1 &&
+          data.DOSE1.vk2nF6wZwY4 &&
+          data.DOSE1.lySxMCMSo8Z
+        ) {
+          const eventDate = data.DOSE1.lySxMCMSo8Z;
+          const { facility, district } = findDistrictAndFacility(data, "DOSE1");
+          const event = {
+            ...data.DOSE1,
+            bbnyNYD1wgS: data.DOSE1[ELSEWHERE_VACCINE] || "",
+            event_execution_date: eventDate,
+            name: facility,
+            rpkH9ZPGJcX: data.DOSE1[ELSEWHERE_MAN] || "",
+            Yp1F4txx8tm: data.DOSE1[ELSEWHERE_BATCH] || "",
+            districtName: district,
+          };
+
+          return {
+            ...data,
+            DOSE2: event,
+          };
+        } else if (
+          data.BOOSTER1 &&
+          data.BOOSTER1.vk2nF6wZwY4 &&
+          data.BOOSTER1.lySxMCMSo8Z
+        ) {
+          const eventDate = data.BOOSTER1.lySxMCMSo8Z;
+          const { facility, district } = findDistrictAndFacility(
+            data,
+            "BOOSTER1"
+          );
+          const event = {
+            ...data.BOOSTER1,
+            bbnyNYD1wgS: data.BOOSTER1[ELSEWHERE_VACCINE] || "",
+            name: facility,
+            event_execution_date: eventDate,
+            rpkH9ZPGJcX: data.BOOSTER1[ELSEWHERE_MAN] || "",
+            Yp1F4txx8tm: data.BOOSTER1[ELSEWHERE_BATCH] || "",
+            districtName: district,
+          };
+          const doseNumber = data.BOOSTER1.AoHMuBgBlkc;
+          return {
+            ...data,
+            [doseNumber]: event,
+          };
+        }
       },
     },
     search: {
