@@ -186,6 +186,8 @@ module.exports = {
 
           const doses = groupBy(previous, "LUIsbsm3okG");
 
+          console.log(doses);
+
           const { BOOSTER, ...others } = doses;
           let foundBoosters = {};
           if (BOOSTER) {

@@ -64,6 +64,7 @@ module.exports = {
       },
       async handler(ctx) {
         let data = await ctx.call("vaccination.certificate", ctx.params);
+
         if (!isEmpty(data)) {
           const qr = await this.generate(data);
           if (
@@ -95,8 +96,14 @@ module.exports = {
               Yp1F4txx8tm: data.DOSE2[ELSEWHERE_BATCH] || "",
               districtName: district,
             };
-            data = { ...data, DOSE1: event, eligible: true, doses: 2 };
-            return { ...data, type: "Fully", qr, doses: 2 };
+            return {
+              ...data,
+              type: "Fully",
+              qr,
+              doses: 2,
+              DOSE1: event,
+              eligible: true,
+            };
           } else if (
             !isEmpty(data) &&
             data.DOSE1 &&
@@ -117,8 +124,14 @@ module.exports = {
               Yp1F4txx8tm: data.DOSE1[ELSEWHERE_BATCH] || "",
               districtName: district,
             };
-            data = { ...data, DOSE2: event, eligible: true, doses: 2 };
-            return { ...data, qr, type: "Fully", doses: 2 };
+            return {
+              ...data,
+              qr,
+              type: "Fully",
+              doses: 2,
+              DOSE2: event,
+              eligible: true,
+            };
           } else if (
             data.BOOSTER1 &&
             data.BOOSTER1.vk2nF6wZwY4 &&
@@ -139,8 +152,14 @@ module.exports = {
               districtName: district,
             };
             const doseNumber = data.BOOSTER1.AoHMuBgBlkc;
-            data = { ...data, eligible: true, [doseNumber]: event, doses: 1 };
-            return { ...data, qr, type: "Fully", doses: 1 };
+            return {
+              ...data,
+              qr,
+              type: "Fully",
+              doses: 1,
+              eligible: true,
+              [doseNumber]: event,
+            };
           } else if (!isEmpty(data) && data.DOSE2) {
             return {
               ...data,
