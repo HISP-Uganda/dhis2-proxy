@@ -253,7 +253,7 @@ module.exports = {
         let foundBoosters = {};
         if (BOOSTER) {
           const sortedByEventDate = orderBy(
-            BOOSTER,
+            mergeByKey("event_uid", BOOSTER),
             ["event_execution_date"],
             ["desc"]
           )
