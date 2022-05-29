@@ -289,7 +289,6 @@ module.exports = {
           };
           return {
             ...data,
-
             DOSE1: event,
           };
         } else if (
@@ -334,6 +333,10 @@ module.exports = {
             districtName: district,
           };
           const doseNumber = data.BOOSTER1.AoHMuBgBlkc;
+          console.log({
+            ...data,
+            [doseNumber]: event,
+          });
           return {
             ...data,
             [doseNumber]: event,
