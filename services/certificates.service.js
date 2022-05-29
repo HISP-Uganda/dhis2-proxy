@@ -333,10 +333,6 @@ module.exports = {
             districtName: district,
           };
           const doseNumber = data.BOOSTER1.AoHMuBgBlkc;
-          console.log({
-            ...data,
-            [doseNumber]: event,
-          });
           return {
             ...data,
             [doseNumber]: event,
@@ -376,7 +372,6 @@ module.exports = {
    */
   methods: {
     generate: async (data) => {
-      console.log(data);
       const attributes =
         data["DOSE1"] || data["DOSE2"] || data["BOOSTER1"] || data["BOOSTER1"];
       const names = `Name:${attributes[NAME_ATTRIBUTE] || ""}\nIdentifier:${
