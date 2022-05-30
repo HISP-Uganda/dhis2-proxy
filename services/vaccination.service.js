@@ -208,19 +208,6 @@ module.exports = {
             ...foundBoosters,
           };
         }
-
-        // let doseUnits = [];
-        // let data = await this.fetchCertificate(identifier, phone);
-        // if (previous.length > 0) {
-        //   const previousData = previous[0]._source;
-
-        // }
-
-        // await ctx.call("es.bulk", {
-        //   index: "certificates",
-        //   dataset: [currentData],
-        //   id: "id",
-        // });
         return {};
       },
     },

@@ -244,11 +244,27 @@ module.exports = {
           index: "epivac",
           body: {
             query: {
-              match: { matched: ctx.params.trackedEntityInstance },
+              bool: {
+                should: [
+                  {
+                    match: {
+                      matched: String(
+                        ctx.params.trackedEntityInstance
+                      ).toLowerCase(),
+                    },
+                  },
+                  {
+                    match: {
+                      tei_uid: String(
+                        ctx.params.trackedEntityInstance
+                      ).toLowerCase(),
+                    },
+                  },
+                ],
+              },
             },
           },
         });
-        console.log(allData);
         const doses = groupBy(allData, "LUIsbsm3okG");
         const { BOOSTER, ...others } = doses;
         let foundBoosters = {};
