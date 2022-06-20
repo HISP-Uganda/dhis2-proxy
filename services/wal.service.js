@@ -91,7 +91,7 @@ module.exports = {
             return await ctx.call("es.bulk", {
               index,
               dataset: data,
-              id: primaryKeys[index],
+              id: primaryKeys[index] || "id",
             });
           }
         } catch (error) {
