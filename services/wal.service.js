@@ -87,13 +87,11 @@ module.exports = {
       async handler(ctx) {
         const { index, data } = ctx.params;
         try {
-          if (primaryKeys[index]) {
-            return await ctx.call("es.bulk", {
-              index,
-              dataset: data,
-              id: primaryKeys[index] || "id",
-            });
-          }
+          return await ctx.call("es.bulk", {
+            index,
+            dataset: data,
+            id: primaryKeys[index] || "id",
+          });
         } catch (error) {
           console.log(error);
           return error;
