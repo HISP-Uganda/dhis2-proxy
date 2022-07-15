@@ -43,6 +43,11 @@ module.exports = {
         return await client.indices.create(body);
       },
     },
+    sql: {
+      async handler(ctx) {
+        return await client.sql.query(ctx.params);
+      },
+    },
     bulk: {
       async handler(ctx) {
         const { index, dataset, id } = ctx.params;

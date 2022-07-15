@@ -98,6 +98,15 @@ module.exports = {
         }
       },
     },
+    sql: {
+      rest: {
+        method: "POST",
+        path: "/sql",
+      },
+      async handler(ctx) {
+        return await ctx.call("es.sql", ctx.params);
+      },
+    },
   },
 
   /**
