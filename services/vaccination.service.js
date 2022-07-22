@@ -178,11 +178,20 @@ module.exports = {
             return p;
           });
 
+          previous = previous.flatMap((p) => {
+            if (p.vk2nF6wZwY4) {
+              console.log(p);
+            }
+            return p;
+          });
+
           await ctx.call("es.bulk", {
             index: "epivac",
             dataset: previous,
             id: "id",
           });
+
+          console.log(previous);
 
           const doses = groupBy(previous, "LUIsbsm3okG");
 
