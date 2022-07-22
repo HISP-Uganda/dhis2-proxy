@@ -16,25 +16,6 @@ const ELSEWHERE_IN_COUNTRY_DISTRICT = "ObwW38YrQHu";
 const ELSEWHERE_IN_COUNTRY_FACILITY = "X7tI86pr1y0";
 const ELSEWHERE_OUT_COUNTRY_FACILITY = "OW3erclrDW8";
 const ELSEWHERE_OUT_COUNTRY = "ONsseOxElW9";
-const ELSEWHERE_VACCINE = "wwX1eEiYLGR";
-const ELSEWHERE_MAN = "taGJD9hkX0s";
-const ELSEWHERE_BATCH = "muCgXjnCfnS";
-
-const findDistrictAndFacility = (data, dose = "DOSE2") => {
-  const where = data[dose][DOSE_PLACE];
-
-  if (where === "Outside the country") {
-    return {
-      facility: data[dose][ELSEWHERE_OUT_COUNTRY_FACILITY],
-      district: data[dose][ELSEWHERE_OUT_COUNTRY],
-    };
-  }
-
-  return {
-    facility: data[dose][ELSEWHERE_IN_COUNTRY_FACILITY],
-    district: data[dose][ELSEWHERE_IN_COUNTRY_DISTRICT],
-  };
-};
 
 const findDistrictAndFacility2 = (data) => {
   const where = data[DOSE_PLACE];
