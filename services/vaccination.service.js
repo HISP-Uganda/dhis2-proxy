@@ -243,9 +243,6 @@ module.exports = {
             return p;
           });
           const doses = groupBy(previous, "LUIsbsm3okG");
-          if (identifier === "CM60106105FGFG") {
-            console.log(doses);
-          }
           const { BOOSTER, ...others } = doses;
           let foundBoosters = {};
           if (BOOSTER) {

@@ -36,6 +36,21 @@ const findDistrictAndFacility = (data, dose = "DOSE2") => {
   };
 };
 
+const findDistrictAndFacility2 = (data) => {
+  const where = data[DOSE_PLACE];
+  if (where === "Outside the country") {
+    return {
+      facility: data[ELSEWHERE_OUT_COUNTRY_FACILITY],
+      district: data[ELSEWHERE_OUT_COUNTRY],
+    };
+  }
+
+  return {
+    facility: data[ELSEWHERE_IN_COUNTRY_FACILITY],
+    district: data[ELSEWHERE_IN_COUNTRY_DISTRICT],
+  };
+};
+
 module.exports = {
   name: "certificates",
   /**
@@ -182,12 +197,51 @@ module.exports = {
             },
           },
         });
-        const doses = groupBy(allData, "LUIsbsm3okG");
+
+        let found = allData.flatMap((p) => {
+          if (
+            p.vk2nF6wZwY4 &&
+            p.vk2nF6wZwY4 !== null &&
+            p.vk2nF6wZwY4 !== undefined
+          ) {
+            const { facility, district } = findDistrictAndFacility2(p);
+            const {
+              ObwW38YrQHu,
+              X7tI86pr1y0,
+              OW3erclrDW8,
+              ONsseOxElW9,
+              wwX1eEiYLGR,
+              taGJD9hkX0s,
+              muCgXjnCfnS,
+              lySxMCMSo8Z,
+              vk2nF6wZwY4,
+              AmTw4pWCCaJ,
+              AoHMuBgBlkc,
+              ...others
+            } = p;
+
+            return [
+              others,
+              {
+                ...others,
+                bbnyNYD1wgS: wwX1eEiYLGR || "",
+                event_execution_date: lySxMCMSo8Z,
+                name: facility,
+                rpkH9ZPGJcX: taGJD9hkX0s || "",
+                Yp1F4txx8tm: muCgXjnCfnS || "",
+                LUIsbsm3okG: AoHMuBgBlkc,
+                districtName: district,
+              },
+            ];
+          }
+          return p;
+        });
+        const doses = groupBy(found, "LUIsbsm3okG");
         const { BOOSTER, ...others } = doses;
         let foundBoosters = {};
         if (BOOSTER) {
           const sortedByEventDate = orderBy(
-            mergeByKey("event_uid", BOOSTER),
+            mergeByKey("event_execution_date", BOOSTER),
             ["event_execution_date"],
             ["desc"]
           )
@@ -200,80 +254,10 @@ module.exports = {
           const gotDoses = mergeByKey("LUIsbsm3okG", allDoses);
           return [dose, gotDoses.length > 0 ? gotDoses[0] : {}];
         });
-        let data = {
+        return {
           ...fromPairs(pp),
           ...foundBoosters,
         };
-        if (
-          !isEmpty(data) &&
-          data.DOSE2 &&
-          data.DOSE2.vk2nF6wZwY4 &&
-          data.DOSE2.lySxMCMSo8Z
-        ) {
-          const eventDate = data.DOSE2.lySxMCMSo8Z;
-          const { facility, district } = findDistrictAndFacility(data, "DOSE2");
-          const event = {
-            ...data.DOSE2,
-            bbnyNYD1wgS: data.DOSE2[ELSEWHERE_VACCINE] || "",
-            event_execution_date: eventDate,
-            name: facility,
-            rpkH9ZPGJcX: data.DOSE2[ELSEWHERE_MAN] || "",
-            Yp1F4txx8tm: data.DOSE2[ELSEWHERE_BATCH] || "",
-            districtName: district,
-          };
-          return {
-            ...data,
-            DOSE1: event,
-          };
-        } else if (
-          !isEmpty(data) &&
-          data.DOSE1 &&
-          data.DOSE1.vk2nF6wZwY4 &&
-          data.DOSE1.lySxMCMSo8Z
-        ) {
-          const eventDate = data.DOSE1.lySxMCMSo8Z;
-          const { facility, district } = findDistrictAndFacility(data, "DOSE1");
-          const event = {
-            ...data.DOSE1,
-            bbnyNYD1wgS: data.DOSE1[ELSEWHERE_VACCINE] || "",
-            event_execution_date: eventDate,
-            name: facility,
-            rpkH9ZPGJcX: data.DOSE1[ELSEWHERE_MAN] || "",
-            Yp1F4txx8tm: data.DOSE1[ELSEWHERE_BATCH] || "",
-            districtName: district,
-          };
-
-          return {
-            ...data,
-            DOSE2: event,
-          };
-        } else if (
-          data.BOOSTER1 &&
-          data.BOOSTER1.vk2nF6wZwY4 &&
-          data.BOOSTER1.lySxMCMSo8Z
-        ) {
-          const eventDate = data.BOOSTER1.lySxMCMSo8Z;
-          const { facility, district } = findDistrictAndFacility(
-            data,
-            "BOOSTER1"
-          );
-          const event = {
-            ...data.BOOSTER1,
-            bbnyNYD1wgS: data.BOOSTER1[ELSEWHERE_VACCINE] || "",
-            name: facility,
-            event_execution_date: eventDate,
-            rpkH9ZPGJcX: data.BOOSTER1[ELSEWHERE_MAN] || "",
-            Yp1F4txx8tm: data.BOOSTER1[ELSEWHERE_BATCH] || "",
-            districtName: district,
-          };
-          const doseNumber = data.BOOSTER1.AoHMuBgBlkc;
-          return {
-            ...data,
-            [doseNumber]: event,
-          };
-        }
-
-        return data;
       },
     },
     search: {
