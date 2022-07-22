@@ -27,10 +27,29 @@ const defence = axios.create({
 
 const PROGRAM = "yDuAzyqYABS";
 const NIN_ATTRIBUTE = "Ewi7FUfcHAD";
-const DOSE = "LUIsbsm3okG";
 const OTHER_ID = "YvnFn4IjKzx";
 const PHONE_ATTRIBUTE = "ciCR6BBvIT4";
+const DOSE_PLACE = "AmTw4pWCCaJ";
+const ELSEWHERE_IN_COUNTRY_DISTRICT = "ObwW38YrQHu";
+const ELSEWHERE_IN_COUNTRY_FACILITY = "X7tI86pr1y0";
+const ELSEWHERE_OUT_COUNTRY_FACILITY = "OW3erclrDW8";
+const ELSEWHERE_OUT_COUNTRY = "ONsseOxElW9";
 let defenceUnits = {};
+
+const findDistrictAndFacility = (data) => {
+  const where = data[DOSE_PLACE];
+  if (where === "Outside the country") {
+    return {
+      facility: data[ELSEWHERE_OUT_COUNTRY_FACILITY],
+      district: data[ELSEWHERE_OUT_COUNTRY],
+    };
+  }
+
+  return {
+    facility: data[ELSEWHERE_IN_COUNTRY_FACILITY],
+    district: data[ELSEWHERE_IN_COUNTRY_DISTRICT],
+  };
+};
 
 module.exports = {
   name: "vaccination",
@@ -178,20 +197,45 @@ module.exports = {
             return p;
           });
 
-          previous = previous.flatMap((p) => {
-            if (p.vk2nF6wZwY4) {
-              console.log(p);
-            }
-            return p;
-          });
-
           await ctx.call("es.bulk", {
             index: "epivac",
             dataset: previous,
             id: "id",
           });
 
-          console.log(previous);
+          previous = previous.flatMap((p) => {
+            if (p.vk2nF6wZwY4) {
+              const { facility, district } = findDistrictAndFacility(p);
+              const {
+                ObwW38YrQHu,
+                X7tI86pr1y0,
+                OW3erclrDW8,
+                ONsseOxElW9,
+                wwX1eEiYLGR,
+                taGJD9hkX0s,
+                muCgXjnCfnS,
+                lySxMCMSo8Z,
+                vk2nF6wZwY4,
+                AmTw4pWCCaJ,
+                AoHMuBgBlkc,
+                ...others
+              } = p;
+              return [
+                others,
+                {
+                  ...others,
+                  bbnyNYD1wgS: wwX1eEiYLGR || "",
+                  event_execution_date: lySxMCMSo8Z,
+                  name: facility,
+                  rpkH9ZPGJcX: taGJD9hkX0s || "",
+                  Yp1F4txx8tm: muCgXjnCfnS || "",
+                  LUIsbsm3okG: AoHMuBgBlkc,
+                  districtName: district,
+                },
+              ];
+            }
+            return p;
+          });
 
           const doses = groupBy(previous, "LUIsbsm3okG");
 
@@ -199,7 +243,7 @@ module.exports = {
           let foundBoosters = {};
           if (BOOSTER) {
             const sortedByEventDate = orderBy(
-              mergeByKey("event_uid", BOOSTER),
+              BOOSTER,
               ["event_execution_date"],
               ["desc"]
             )
