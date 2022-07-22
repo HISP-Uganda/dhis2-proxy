@@ -82,7 +82,7 @@ module.exports = {
           };
           const qr = await this.generate(updatedData);
           return { ...updatedData, qr };
-        } else if (!isEmpty(data) && data.DOSE1 && !data.DOSE1.vk2nF6wZwY4) {
+        } else if (!isEmpty(data) && data.DOSE1) {
           const updatedData = {
             ...data,
             type: "Partially",

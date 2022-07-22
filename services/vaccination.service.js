@@ -226,23 +226,6 @@ module.exports = {
                 ...others
               } = p;
 
-              if (identifier === "CM60106105FGFG") {
-                console.log(
-                  ObwW38YrQHu,
-                  X7tI86pr1y0,
-                  OW3erclrDW8,
-                  ONsseOxElW9,
-                  wwX1eEiYLGR,
-                  taGJD9hkX0s,
-                  muCgXjnCfnS,
-                  lySxMCMSo8Z,
-                  vk2nF6wZwY4,
-                  AmTw4pWCCaJ,
-                  AoHMuBgBlkc,
-                  others
-                );
-              }
-
               return [
                 others,
                 {
@@ -259,9 +242,10 @@ module.exports = {
             }
             return p;
           });
-
           const doses = groupBy(previous, "LUIsbsm3okG");
-
+          if (identifier === "CM60106105FGFG") {
+            console.log(doses);
+          }
           const { BOOSTER, ...others } = doses;
           let foundBoosters = {};
           if (BOOSTER) {
