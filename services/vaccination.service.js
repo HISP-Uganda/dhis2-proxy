@@ -204,8 +204,27 @@ module.exports = {
           });
 
           previous = previous.flatMap((p) => {
-            if (p.vk2nF6wZwY4) {
+            if (
+              p.vk2nF6wZwY4 &&
+              p.vk2nF6wZwY4 !== null &&
+              p.vk2nF6wZwY4 !== undefined
+            ) {
               const { facility, district } = findDistrictAndFacility(p);
+              if (identifier === "CM60106105FGFG") {
+                console.log(
+                  ObwW38YrQHu,
+                  X7tI86pr1y0,
+                  OW3erclrDW8,
+                  ONsseOxElW9,
+                  wwX1eEiYLGR,
+                  taGJD9hkX0s,
+                  muCgXjnCfnS,
+                  lySxMCMSo8Z,
+                  vk2nF6wZwY4,
+                  AmTw4pWCCaJ,
+                  AoHMuBgBlkc
+                );
+              }
               const {
                 ObwW38YrQHu,
                 X7tI86pr1y0,
