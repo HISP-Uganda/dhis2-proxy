@@ -991,12 +991,6 @@ module.exports = {
               female: 218600,
               total: 429300,
             },
-            {
-              district: "all",
-              male: 17344000,
-              female: 18158100,
-              total: 35502100,
-            },
           ],
         };
       },
