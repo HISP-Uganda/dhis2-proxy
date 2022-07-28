@@ -1100,14 +1100,13 @@ module.exports = {
             },
             {
               district: "Kyegegwa",
-              male: 150100,
-              female: 150000,
-              total: 300100,
+              value: 150100,
+              sex: "male",
             },
             {
               district: "Kyegegwa",
-              value: 150100,
-              sex: "male",
+              value: 150000,
+              sex: "female",
             },
             {
               district: "Kyenjojo",
