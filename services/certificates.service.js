@@ -63,7 +63,8 @@ module.exports = {
         if (
           !isEmpty(data) &&
           data.DOSE1 &&
-          data.DOSE1.bbnyNYD1wgS === "Johnson and Johnson"
+          (data.DOSE1.bbnyNYD1wgS === "Johnson and Johnson" ||
+            data.DOSE1.bbnyNYD1wgS === "Johnson & Johnson")
         ) {
           const qr = await this.generate(data);
           return { ...data, qr, eligible: true, type: "Fully", doses: 1 };
