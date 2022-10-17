@@ -157,7 +157,7 @@ module.exports = {
     exchange: {
       rest: {
         method: "POST",
-        path: "/sql",
+        path: "/exchange",
       },
       async handler(ctx) {
         const { source, destination } = ctx.params;
