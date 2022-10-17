@@ -161,7 +161,7 @@ module.exports = {
       },
       async handler(ctx) {
         const { source, destination } = ctx.params;
-        const dashboards = await ctx.call("es.search", {
+        const dashboards = await ctx.call("es.scroll", {
           index: "i-dashboards",
           body: {
             query: {
@@ -169,7 +169,7 @@ module.exports = {
             },
           },
         });
-        const visualizations = await ctx.call("es.search", {
+        const visualizations = await ctx.call("es.scroll", {
           index: "i-visualization-queries",
           body: {
             query: {
@@ -177,7 +177,7 @@ module.exports = {
             },
           },
         });
-        const categories = await ctx.call("es.search", {
+        const categories = await ctx.call("es.scroll", {
           index: "i-categories",
           body: {
             query: {
@@ -185,7 +185,7 @@ module.exports = {
             },
           },
         });
-        const dataSources = await ctx.call("es.search", {
+        const dataSources = await ctx.call("es.scroll", {
           index: "i-data-sources",
           body: {
             query: {
@@ -193,7 +193,7 @@ module.exports = {
             },
           },
         });
-        const settings = await ctx.call("es.search", {
+        const settings = await ctx.call("es.scroll", {
           index: "i-dashboard-settings",
           body: {
             query: {
