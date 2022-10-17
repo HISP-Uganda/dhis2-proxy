@@ -193,6 +193,7 @@ module.exports = {
             },
           },
         });
+
         const settings = await ctx.call("es.scroll", {
           index: "i-dashboard-settings",
           body: {
@@ -201,12 +202,56 @@ module.exports = {
             },
           },
         });
+
+        if (dashboards.length > 0) {
+          await ctx.call("es.bulk", {
+            index: "i-dashboards",
+            dataset: dashboards.map((dashboard) => {
+              return { ...dashboard, systemId: destination };
+            }),
+            id: "id",
+          });
+        }
+        if (visualizations.length > 0) {
+          await ctx.call("es.bulk", {
+            index: "i-visualization-queries",
+            dataset: visualizations.map((visualization) => {
+              return { ...visualization, systemId: destination };
+            }),
+            id: "id",
+          });
+        }
+
+        if (categories.length > 0) {
+          await ctx.call("es.bulk", {
+            index: "i-categories",
+            dataset: categories.map((category) => {
+              return { ...category, systemId: destination };
+            }),
+            id: "id",
+          });
+        }
+
+        if (dataSources.length > 0) {
+          await ctx.call("es.bulk", {
+            index: "i-data-sources",
+            dataset: dataSources.map((dataSource) => {
+              return { ...dataSource, systemId: destination };
+            }),
+            id: "id",
+          });
+        }
+        if (settings.length > 0) {
+          await ctx.call("es.bulk", {
+            index: "i-dashboard-settings",
+            dataset: settings.map((setting) => {
+              return { ...setting, systemId: destination };
+            }),
+            id: "id",
+          });
+        }
         return {
-          dashboards,
-          settings,
-          dataSources,
-          categories,
-          visualizations,
+          finished: true,
         };
       },
     },
