@@ -3,8 +3,6 @@ const { Client } = require("@elastic/elasticsearch");
 const { flatMap } = require("lodash");
 
 const client = new Client({ node: "http://localhost:9200" });
-// const client = new Client({ node: "http://192.168.64.3:9200" });
-// { match_phrase: { ciCR6BBvIT4: phone } },
 
 require("array.prototype.flatmap").shim();
 
@@ -48,6 +46,22 @@ module.exports = {
         return await client.sql.query(ctx.params);
       },
     },
+    delete: {
+      async handler(ctx) {
+        return await client.deleteByQuery(ctx.params);
+      },
+    },
+    index: {
+      async handler(ctx) {
+        return await client.index(ctx.params);
+      },
+    },
+    get: {
+      async handler(ctx) {
+        return await client.get(ctx.params);
+      },
+    },
+
     bulk: {
       async handler(ctx) {
         const { index, dataset, id } = ctx.params;
@@ -217,11 +231,7 @@ module.exports = {
         body: "object",
       },
       async handler(ctx) {
-        console.log(ctx.params);
-        const scrollSearch = client.helpers.scrollSearch({
-          index: ctx.params.index,
-          body: ctx.params.body,
-        });
+        const scrollSearch = client.helpers.scrollSearch(ctx.params);
         let documents = [];
         for await (const result of scrollSearch) {
           documents = [...documents, ...result.documents];

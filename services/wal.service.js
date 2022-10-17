@@ -62,7 +62,6 @@ module.exports = {
         path: "/receive",
       },
       async handler(ctx) {
-        console.log(ctx.params);
         return ctx.params;
       },
     },
@@ -79,10 +78,10 @@ module.exports = {
         });
       },
     },
-    index: {
+    bulk: {
       rest: {
         method: "POST",
-        path: "/index",
+        path: "/bulk",
       },
       async handler(ctx) {
         const { index, data } = ctx.params;
@@ -98,6 +97,54 @@ module.exports = {
         }
       },
     },
+    index: {
+      rest: {
+        method: "POST",
+        path: "/index",
+      },
+      async handler(ctx) {
+        const { index, id, ...document } = ctx.params;
+        try {
+          return await ctx.call("es.index", {
+            index,
+            id: primaryKeys[index] || "id",
+            document,
+          });
+        } catch (error) {
+          console.log(error);
+          return error;
+        }
+      },
+    },
+    delete: {
+      rest: {
+        method: "POST",
+        path: "/delete",
+      },
+      async handler(ctx) {
+        try {
+          return await ctx.call("es.delete", ctx.params);
+        } catch (error) {
+          console.log(error);
+          return error;
+        }
+      },
+    },
+    get: {
+      rest: {
+        method: "GET",
+        path: "/get",
+      },
+      async handler(ctx) {
+        const { index, id } = ctx.params;
+        try {
+          return await ctx.call("es.get", { index, id });
+        } catch (error) {
+          console.log(error);
+          return error;
+        }
+      },
+    },
     sql: {
       rest: {
         method: "POST",
@@ -105,6 +152,62 @@ module.exports = {
       },
       async handler(ctx) {
         return await ctx.call("es.sql", ctx.params);
+      },
+    },
+    exchange: {
+      rest: {
+        method: "POST",
+        path: "/sql",
+      },
+      async handler(ctx) {
+        const { source, destination } = ctx.params;
+        const dashboards = await ctx.call("es.scroll", {
+          index: "i-dashboards",
+          body: {
+            query: {
+              term: { "systemId.keyword": source },
+            },
+          },
+        });
+        const visualizations = await ctx.call("es.scroll", {
+          index: "i-visualization-queries",
+          body: {
+            query: {
+              term: { "systemId.keyword": source },
+            },
+          },
+        });
+        const categories = await ctx.call("es.scroll", {
+          index: "i-categories",
+          body: {
+            query: {
+              term: { "systemId.keyword": source },
+            },
+          },
+        });
+        const dataSources = await ctx.call("es.scroll", {
+          index: "i-data-sources",
+          body: {
+            query: {
+              term: { "systemId.keyword": source },
+            },
+          },
+        });
+        const settings = await ctx.call("es.scroll", {
+          index: "i-dashboard-settings",
+          body: {
+            query: {
+              term: { "systemId.keyword": source },
+            },
+          },
+        });
+        return {
+          dashboards,
+          settings,
+          dataSources,
+          categories,
+          visualizations,
+        };
       },
     },
     population: {
