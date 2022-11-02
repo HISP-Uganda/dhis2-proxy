@@ -85,16 +85,11 @@ module.exports = {
       },
       async handler(ctx) {
         const { index, data } = ctx.params;
-        try {
-          return await ctx.call("es.bulk", {
-            index,
-            dataset: data,
-            id: primaryKeys[index] || "id",
-          });
-        } catch (error) {
-          console.log(error);
-          return error;
-        }
+        return await ctx.call("es.bulk", {
+          index,
+          dataset: data,
+          id: primaryKeys[index] || "id",
+        });
       },
     },
     index: {
@@ -109,16 +104,11 @@ module.exports = {
           id,
           ...document
         } = ctx.params;
-        try {
-          return await ctx.call("es.index", {
-            index,
-            id,
-            document: { ...document, id: id || otherId },
-          });
-        } catch (error) {
-          console.log(error);
-          return error;
-        }
+        return await ctx.call("es.index", {
+          index,
+          id,
+          document: { ...document, id: id || otherId },
+        });
       },
     },
     delete: {
@@ -127,12 +117,7 @@ module.exports = {
         path: "/delete",
       },
       async handler(ctx) {
-        try {
-          return await ctx.call("es.delete", ctx.params);
-        } catch (error) {
-          console.log(error);
-          return error;
-        }
+        return await ctx.call("es.delete", ctx.params);
       },
     },
     get: {
@@ -142,12 +127,7 @@ module.exports = {
       },
       async handler(ctx) {
         const { index, id } = ctx.params;
-        try {
-          return await ctx.call("es.get", { index, id });
-        } catch (error) {
-          console.log(error);
-          return error;
-        }
+        return await ctx.call("es.get", { index, id });
       },
     },
     sql: {
