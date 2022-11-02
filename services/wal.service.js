@@ -102,12 +102,12 @@ module.exports = {
           index,
           [primaryKeys[index]]: otherId,
           id,
-          ...document
+          ...body
         } = ctx.params;
         return await ctx.call("es.index", {
           index,
           id,
-          document: { ...document, id: id || otherId },
+          body: { ...body, id: id || otherId },
         });
       },
     },
