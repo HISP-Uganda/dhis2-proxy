@@ -254,22 +254,6 @@ module.exports = {
         return aggregations;
       },
     },
-    get: {
-      params: {
-        index: "string",
-        id: "string",
-      },
-      async handler(ctx) {
-        const { index, id } = ctx.params;
-        const {
-          body: { _source },
-        } = await client.get({
-          index,
-          id,
-        });
-        return _source;
-      },
-    },
   },
 
   /**

@@ -103,12 +103,17 @@ module.exports = {
         path: "/index",
       },
       async handler(ctx) {
-        const { index, id, ...document } = ctx.params;
+        const {
+          index,
+          [primaryKeys[index]]: otherId,
+          id,
+          ...document
+        } = ctx.params;
         try {
           return await ctx.call("es.index", {
             index,
-            id: primaryKeys[index] || "id",
-            document,
+            id,
+            document: { ...document, id: id || otherId },
           });
         } catch (error) {
           console.log(error);
