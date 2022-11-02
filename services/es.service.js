@@ -46,9 +46,14 @@ module.exports = {
         return await client.sql.query(ctx.params);
       },
     },
-    delete: {
+    deleteByQuery: {
       async handler(ctx) {
         return await client.deleteByQuery(ctx.params);
+      },
+    },
+    delete: {
+      async handler(ctx) {
+        return await client.delete(ctx.params);
       },
     },
     index: {
